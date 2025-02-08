@@ -1,6 +1,6 @@
 # BootcampAppBack
 
-## 📊 My Top Repositories
+## 📊 Configuration project + NVM
 - Steps to Install NVM on Windows:
 - [Go to the nvm-windows releases page](https://github.com/coreybutler/nvm-windows/releases)
 - Go to Contributors
