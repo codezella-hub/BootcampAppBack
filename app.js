@@ -4,6 +4,7 @@ const db = require('./config/db.json');
 const categoryRouter = require('./routes/categoryRoute');
 const courseRouter = require('./routes/courseRoute');
 const courseDetailsRouter = require('./routes/courseDetailsRoute');
+const subCourseRouter = require('./routes/SubCourseRoute');
 const path = require('path');
 
 // Connect to the database
@@ -28,6 +29,7 @@ app.get('/', (req, res) => {
 app.use('/api', categoryRouter);
 app.use('/api', courseRouter);
 app.use('/api', courseDetailsRouter);
+app.use('/api', subCourseRouter);
 
 // Start the server on port 3000
 app.listen(3000, () => {
