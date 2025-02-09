@@ -11,7 +11,7 @@ const course = new Schema(
         description: { type: String, required: true },
         price: { type: Number, required: true },
         courseImage: { type: String, required: true },
-        category: { type: Schema.Types.ObjectId, ref: 'Category', required: true }  // Reference to Category model
+        category: { type: Schema.Types.ObjectId, ref: 'Category', required: true },  // Reference to Category model
     },
     { timestamps: true }  // Adds createdAt and updatedAt automatically
 );
