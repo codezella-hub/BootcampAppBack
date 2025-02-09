@@ -1,26 +1,29 @@
 const express = require('express');
 const mongo = require('mongoose');
 const db = require('./config/db.json');
-const userRouter = require('./routes/user');
 const categoryRouter = require('./routes/categoryRoute');
 const courseRouter = require('./routes/courseRoute');
+const path = require('path');
 
 // Connect to the database
 mongo.connect(db.url)
     .then(() => console.log('Database connected'))
     .catch((err) => console.log(err));
 
-var app = express();
+const app = express();
 
 // Middleware to parse JSON
 app.use(express.json());
+
+// Serve uploaded images statically
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Define a route for the root URL
 app.get('/', (req, res) => {
     res.send('Welcome to the BootcampAppBack!');
 });
-//routes
-app.use('/api', userRouter);
+
+// Routes
 app.use('/api', categoryRouter);
 app.use('/api', courseRouter);
 

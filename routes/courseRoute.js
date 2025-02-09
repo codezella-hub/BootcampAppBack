@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const courseController = require('../controller/courseController');
 
-// Add course
-router.post('/addCourse', courseController.addCourse);
+// Add course (with image upload)
+router.post('/addCourse', courseController.upload.single('courseImage'), courseController.addCourse);
 
 // Get all courses
 router.get('/courses', courseController.getCourses);
@@ -11,10 +11,10 @@ router.get('/courses', courseController.getCourses);
 // Get a single course by ID
 router.get('/course/:id', courseController.getCourse);
 
-// Update a course by ID
-router.put('/updateCourse/:id', courseController.updateCourse);
+// Update course by ID (with optional image upload)
+router.put('/updateCourse/:id', courseController.upload.single('courseImage'), courseController.updateCourse);
 
-// Delete a course by ID
+// Delete course by ID
 router.delete('/deleteCourse/:id', courseController.deleteCourse);
 
 module.exports = router;
