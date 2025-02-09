@@ -22,6 +22,6 @@ const upload = multer({ storage: storage });
 router.post('/addVideo', upload.fields([
     { name: 'video', maxCount: 1 },        // Video field
     { name: 'thumbnail', maxCount: 1 }     // Thumbnail field
-]), addVideo);
+]) , addVideo);
 
 module.exports = router;  // Use module.exports instead of export default
