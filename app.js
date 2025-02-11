@@ -6,6 +6,7 @@ const courseRouter = require('./routes/courseRoute');
 const courseDetailsRouter = require('./routes/courseDetailsRoute');
 const subCourseRouter = require('./routes/SubCourseRoute');
 const videoRouter = require('./routes/videoRoute');
+const AuthRoutes = require('./routes/auth.routes')
 const path = require('path');
 require('dotenv').config();
 
@@ -35,7 +36,7 @@ app.use('/api', courseRouter);
 app.use('/api', courseDetailsRouter);
 app.use('/api', subCourseRouter);
 app.use('/api', videoRouter);
-
+app.use('/api/auth',AuthRoutes)
 // Start the server on port 3000
 app.listen(3000, () => {
     console.log('Server is running on port 3000');
