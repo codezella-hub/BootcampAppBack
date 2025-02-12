@@ -6,8 +6,10 @@ const courseRouter = require('./routes/courseRoute');
 const courseDetailsRouter = require('./routes/courseDetailsRoute');
 const subCourseRouter = require('./routes/SubCourseRoute');
 const videoRouter = require('./routes/videoRoute');
+const userRouter = require('./routes/userRoute');
 const path = require('path');
 require('dotenv').config();
+const cors = require('cors');
 
 // Connect to the database
 mongo.connect(db.url)
@@ -29,12 +31,24 @@ app.get('/', (req, res) => {
     res.send('Welcome to the BootcampAppBack!');
 });
 
+
 // Routes
+
+
+const corsOptions = {
+  origin: 'http://localhost:5173', // Ensure this matches your frontend port
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+app.use(cors(corsOptions));
+
 app.use('/api', categoryRouter);
 app.use('/api', courseRouter);
 app.use('/api', courseDetailsRouter);
 app.use('/api', subCourseRouter);
 app.use('/api', videoRouter);
+app.use('/api', userRouter);
 
 // Start the server on port 3000
 app.listen(3000, () => {
