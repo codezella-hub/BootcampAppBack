@@ -28,57 +28,61 @@ const upload = multer({ storage });
 // Register user
 async function register(req, res) {
     try {
-        const { fullName, birthOfDate, cin, phoneNumber, email, password } = req.body;
-        const image = req.file ? `/uploads/${req.file.filename}` : null;
-
-        // Check if fields are empty and return specific error messages
-        if (!fullName) return res.status(400).json({ message: 'Full name is required' });
-        if (!birthOfDate) return res.status(400).json({ message: 'Birth date is required' });
-        if (!cin) return res.status(400).json({ message: 'CIN is required' });
-        if (!phoneNumber) return res.status(400).json({ message: 'Phone number is required' });
-        if (!email) return res.status(400).json({ message: 'Email is required' });
-        if (!password) return res.status(400).json({ message: 'Password is required' });
-        if (!image) return res.status(400).json({ message: 'Image is required' });
-
-        // Validate CIN and Phone Number (must be exactly 8 digits)
-        if (!/^\d{8}$/.test(cin)) {
-            return res.status(400).json({ message: 'CIN must be exactly 8 digits' });
-        }
-        if (!/^\d{8}$/.test(phoneNumber)) {
-            return res.status(400).json({ message: 'Phone number must be exactly 8 digits' });
-        }
-
-        // Check if CIN exists
+      const { fullName, birthOfDate, cin, phoneNumber, email, password } = req.body;
+      const image = req.file ? `/uploads/${req.file.filename}` : null;
+  
+      let errors = [];
+  
+      // Check if fields are empty and return specific error messages
+      if (!fullName) errors.push('Full name is required');
+      if (!birthOfDate) errors.push('Birth date is required');
+      if (!cin) errors.push('CIN is required');
+      if (!phoneNumber) errors.push('Phone number is required');
+      if (!email) errors.push('Email is required');
+      if (!password) errors.push('Password is required');
+      if (!image) errors.push('Image is required');
+  
+      // Validate CIN and Phone Number (must be exactly 8 digits)
+      if (cin && !/^\d{8}$/.test(cin)) errors.push('CIN must be exactly 8 digits');
+      if (phoneNumber && !/^\d{8}$/.test(phoneNumber)) errors.push('Phone number must be exactly 8 digits');
+  
+      // Check if CIN exists
+      if (cin) {
         const existingCin = await User.findOne({ cin });
-        if (existingCin) {
-            return res.status(400).json({ message: 'CIN already exists' });
-        }
-
-        // Check if Phone Number exists
+        if (existingCin) errors.push('CIN already exists');
+      }
+  
+      // Check if Phone Number exists
+      if (phoneNumber) {
         const existingPhone = await User.findOne({ phoneNumber });
-        if (existingPhone) {
-            return res.status(400).json({ message: 'Phone number already exists' });
-        }
-
-        // Check if Email exists
+        if (existingPhone) errors.push('Phone number already exists');
+      }
+  
+      // Check if Email exists
+      if (email) {
         const existingEmail = await User.findOne({ email });
-        if (existingEmail) {
-            return res.status(400).json({ message: 'Email already exists' });
-        }
+        if (existingEmail) errors.push('Email already exists');
+      }
+  
+      if (errors.length > 0) {
+        return res.status(400).json({ errors });
+      }
+  
+      // Hash the password
+      const hashedPassword = await bcrypt.hash(password, 10);
+  
+      // Create new user and save to database
+      const newUser = new User({ fullName, birthOfDate, cin, phoneNumber, email, image, password: hashedPassword });
+      await newUser.save();
+  
+      res.status(200).json({ status: 200, message: 'User registered successfully' });
 
-        // Hash the password
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        // Create new user and save to database
-        const newUser = new User({ fullName, birthOfDate, cin, phoneNumber, email, image, password: hashedPassword });
-        await newUser.save();
-
-        res.status(201).json({ message: 'User registered successfully' });
     } catch (err) {
-        console.error(err);
-        res.status(500).send('Error registering user');
+      console.error(err);
+      res.status(500).send('Error registering user');
     }
-}
+  }
+  
 
 // Login user
 async function login(req, res) {
@@ -105,7 +109,7 @@ async function login(req, res) {
         // Compare the password with the hashed password in the database
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(400).json({ errors: { password: 'Invalid credentials' } });
+            return res.status(400).json({ errors: { password: 'email or password are inccorect' } });
         }
 
         // Generate a JWT token
