@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const categoryController = require('../controller/categoryController');
 
-// Add category
-router.post('/addCategory', categoryController.addCategory);
+// Add course (with image upload)
+router.post('/addCategory', categoryController.upload.single('categoryImage'), categoryController.addCategory);
 
 // Get all categories
 router.get('/categories', categoryController.getCategories);
@@ -11,8 +11,8 @@ router.get('/categories', categoryController.getCategories);
 // Get a single category by ID
 router.get('/category/:id', categoryController.getCategory);
 
-// Update a category by ID
-router.put('/updateCategory/:id', categoryController.updateCategory);
+// Update course by ID (with optional image upload)
+router.put('/updateCategory/:id', categoryController.upload.single('categoryImage'), categoryController.updateCategory);
 
 // Delete a category by ID
 router.delete('/deleteCategory/:id', categoryController.deleteCategory);
