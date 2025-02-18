@@ -38,7 +38,9 @@ async function addCategory(req, res) {
         const newCategory = new Category({ title, description, image });
         await newCategory.save();
 
-        res.status(201).json(newCategory);
+        //res.status(201).json(newCategory);
+        res.status(201).json({ status: 201, message: 'Category added successfully', newCategory });
+
     } catch (err) {
         console.error(err);
         res.status(500).send('Error saving category');
