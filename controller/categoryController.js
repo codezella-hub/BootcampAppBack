@@ -29,13 +29,13 @@ module.exports = upload;
 async function addCategory(req, res) {
     try {
         const { title, description } = req.body;
-        const categoryImage = req.file ? `/uploads/categories/${req.file.filename}` : null;
+        const image = req.file ? `/uploads/categories/${req.file.filename}` : null;
 
-        if (!title || !description ) {
+        if (!title || !description || !image) {
             return res.status(400).json({ message: 'Title, description, and image are required' });
         }
 
-        const newCategory = new Category({ title, description, categoryImage });
+        const newCategory = new Category({ title, description, image });
         await newCategory.save();
 
         res.status(201).json(newCategory);
@@ -77,7 +77,7 @@ async function updateCategory(req, res) {
         let updateData = { title, description };
 
         if (req.file) {
-            updateData.categoryImage = `/uploads/categories/${req.file.filename}`;
+            updateData.image = `/uploads/categories/${req.file.filename}`;
         }
 
         const updatedCategory = await Category.findByIdAndUpdate(req.params.id, updateData, { new: true });
