@@ -6,6 +6,7 @@ const category = new Schema(
     {
         title: { type: String, required: true },
         description: { type: String, required: true },
+        image: { type: String, required: true },
     },
     { timestamps: true }  // Adds createdAt and updatedAt automatically
 );
