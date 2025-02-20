@@ -7,6 +7,7 @@ const courseDetailsRouter = require('./routes/courseDetailsRoute');
 const subCourseRouter = require('./routes/SubCourseRoute');
 const videoRouter = require('./routes/videoRoute');
 const userRouter = require('./routes/userRoute');
+//const AuthRoutes = require('./routes/auth.routes')
 const path = require('path');
 require('dotenv').config();
 const cors = require('cors');
