@@ -4,7 +4,7 @@ const commentController = require('../controller/commentController');
 const validate = require('../middleware/validate');
 
 router.post('/comments', validate.validateComment, commentController.addComment);
-router.get('/forums/:forumId/comments', commentController.showCommentsByForum);
+router.get('/comments/:forumId', commentController.showCommentsByForum);
 router.put('/comments/:id', validate.validateComment, commentController.updateComment);
 router.delete('/comments/:id', commentController.deleteComment);
 

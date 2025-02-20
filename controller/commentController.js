@@ -21,12 +21,14 @@ async function addComment(req, res) {
             user: userId,
             forum: forumId,
             createdAt: new Date(),
+            updatedAt: new Date(),
         });
 
         await newComment.save();
 
         // Ajouter le commentaire au forum
         forum.comments.push(newComment._id);
+        forum.commentCount++;
         await forum.save();
 
         res.status(200).json(newComment);
@@ -39,10 +41,10 @@ async function addComment(req, res) {
 // Afficher tous les commentaires d'un forum
 async function showCommentsByForum(req, res) {
     try {
-        const forumId = req.params.forumId;
+        
 
         // Vérifier si le forum existe
-        const forum = await Forum.findById(forumId).populate('comments');
+        const forum = await Forum.findById(req.params.forumId);
         if (!forum) {
             return res.status(404).send('Forum not found');
         }
@@ -75,7 +77,7 @@ async function showCommentById(req, res) {
 // Mettre à jour un commentaire
 async function updateComment(req, res) {
     try {
-        const commentId = req.params.commentId;
+        const commentId = req.params.id;
         const { content } = req.body;
         
 
@@ -99,7 +101,7 @@ async function updateComment(req, res) {
 // Supprimer un commentaire
 async function deleteComment(req, res) {
     try {
-        const commentId = req.params.commentId;
+        const commentId = req.params.id;
 
         const deletedComment = await Comment.findByIdAndDelete(commentId);
 

@@ -6,9 +6,11 @@ async function validateForum(req, res, next) {
         const Schema = yup.object().shape({
             title: yup.string().required(),
             description: yup.string(),
+            categorie: yup.string(),
             image: yup.string().url(),
             user: yup.string().required(), 
             commentCount: yup.number().default(0),
+            likeCount: yup.number().default(0),
             reported: yup.boolean().default(false),
         });
         await Schema.validate(req.body);

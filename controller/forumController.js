@@ -4,7 +4,7 @@ const User = require("../models/user");
 // Ajouter un forum
 async function addForum(req, res) {
     try {
-        const { title, description, image, user } = req.body;
+        const { title, description, image, user,categorie } = req.body;
         const foundUser = await User.findById(user);
         if (!foundUser) {
             return res.status(404).send('User not found');
@@ -16,7 +16,9 @@ async function addForum(req, res) {
             description,
             image,
             user,
+            categorie,
             commentCount: 0,
+            likeCount:0,
             reported: false,
             createdAt: new Date(),
             updatedAt: new Date(),
@@ -44,10 +46,7 @@ async function showAllForums(req, res) {
 // Afficher un forum par ID
 async function showForumById(req, res) {
     try {
-        const forum = await Forum.findById(req.params.id)
-            .populate("users", "username email")
-            .populate("comments", "content user createdAt")
-            .populate("likes", "user createdAt");
+        const forum = await Forum.findById(req.params.id);
 
         if (!forum) {
             return res.status(404).send('Forum not found');
@@ -62,13 +61,11 @@ async function showForumById(req, res) {
 // Mettre à jour un forum
 async function updateForum(req, res) {
     try {
-        const { forumId } = req.params;
-        const { title, description, image } = req.body;
+        
+        const { title, description, image,categorie } = req.body;
 
         const updatedForum = await Forum.findByIdAndUpdate(
-            forumId,
-            { title, description, image, updatedAt: new Date() },
-            { new: true }
+            req.params.id,{ title, description, image, categorie,updatedAt: new Date() },{ new: true }
         );
 
         if (!updatedForum) {
@@ -85,9 +82,9 @@ async function updateForum(req, res) {
 // Supprimer un forum
 async function deleteForum(req, res) {
     try {
-        const { forumId } = req.params;
+        
 
-        const deletedForum = await Forum.findByIdAndDelete(forumId);
+        const deletedForum = await Forum.findByIdAndDelete(req.params.id);
 
         if (!deletedForum) {
             return res.status(404).send('Forum not found');

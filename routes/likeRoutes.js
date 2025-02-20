@@ -6,7 +6,7 @@ const validate = require('../middleware/validate');
 
 router.post('/likes', likeController.addLike);
 router.delete('/likes', likeController.removeLike);
-router.get('/forums/:forumId/likes', likeController.showLikesByForum);
-router.get('/forums/:forumId/like-count', likeController.countLikesByForum);
+router.get('/likes/:forumId', likeController.showLikesByForum);
+router.get('/like-count/:forumId', likeController.countLikesByForum);
 
 module.exports = router;

@@ -33,6 +33,7 @@ async function addLike(req, res) {
 
         // Ajouter le like au forum
         forum.likes.push(newLike._id);
+        forum.likeCount++;
         await forum.save();
 
         res.status(200).json(newLike);
@@ -68,10 +69,10 @@ async function removeLike(req, res) {
 // Afficher les likes d'un forum
 async function showLikesByForum(req, res) {
     try {
-        const forumId = req.params.forumId;
+      
 
         // Vérifier si le forum existe
-        const forum = await Forum.findById(forumId).populate('likes');
+        const forum = await Forum.findById(req.params.forumId).populate('likes');
         if (!forum) {
             return res.status(404).send('Forum not found');
         }
@@ -86,10 +87,9 @@ async function showLikesByForum(req, res) {
 // Compter le nombre de likes d'un forum
 async function countLikesByForum(req, res) {
     try {
-        const forumId = req.params.forumId;
 
         // Vérifier si le forum existe
-        const forum = await Forum.findById(forumId);
+        const forum = await Forum.findById(req.params.forumId);
         if (!forum) {
             return res.status(404).send('Forum not found');
         }
