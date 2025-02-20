@@ -7,7 +7,11 @@ const courseDetailsRouter = require('./routes/courseDetailsRoute');
 const subCourseRouter = require('./routes/SubCourseRoute');
 const videoRouter = require('./routes/videoRoute');
 const userRouter = require('./routes/userRoute');
-//const AuthRoutes = require('./routes/auth.routes')
+//const AuthRoutes = require('./routes/auth.routes');
+const forumRoutes = require('./routes/forumRoutes');
+const commentRoutes = require('./routes/commentRoutes');
+const likeRoutes = require('./routes/likeRoutes');
+
 const path = require('path');
 require('dotenv').config();
 const cors = require('cors');
@@ -50,6 +54,9 @@ app.use('/api', courseDetailsRouter);
 app.use('/api', subCourseRouter);
 app.use('/api', videoRouter);
 app.use('/api', userRouter);
+app.use('/api',forumRoutes);
+app.use('/api',commentRoutes);
+app.use('/api',likeRoutes);
 
 // Start the server on port 3000
 app.listen(3000, () => {
