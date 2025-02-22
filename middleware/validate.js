@@ -4,11 +4,11 @@ const yup = require("yup");
 async function validateForum(req, res, next) {
     try {
         const Schema = yup.object().shape({
-            title: yup.string().required(),
+            title: yup.string(),
             description: yup.string(),
             categorie: yup.string(),
             image: yup.string().url(),
-            user: yup.string().required(), 
+            user: yup.string(), 
             commentCount: yup.number().default(0),
             likeCount: yup.number().default(0),
             reported: yup.boolean().default(false),

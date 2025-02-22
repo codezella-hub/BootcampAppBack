@@ -1,10 +1,35 @@
 const Forum = require("../models/forum")
 const User = require("../models/user"); 
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
+const uploadDir = 'uploads/forum/';
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+// Multer storage configuration
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, uploadDir); // Save images in `uploads/categories/`
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname)); // Unique filename
+    }
+});
+
+// Multer middleware for image uploads
+const upload = multer({ storage });
+
+module.exports = upload;
 
 // Ajouter un forum
 async function addForum(req, res) {
     try {
-        const { title, description, image, user,categorie } = req.body;
+        const { title, description, user,categorie } = req.body;
+        const image = req.file ? `/uploads/forum/${req.file.filename}` : null;
+
         const foundUser = await User.findById(user);
         if (!foundUser) {
             return res.status(404).send('User not found');
@@ -62,8 +87,8 @@ async function showForumById(req, res) {
 async function updateForum(req, res) {
     try {
         
-        const { title, description, image,categorie } = req.body;
-
+        const { title, description,categorie } = req.body;
+        const image = req.file ? `/uploads/forum/${req.file.filename}` : null;
         const updatedForum = await Forum.findByIdAndUpdate(
             req.params.id,{ title, description, image, categorie,updatedAt: new Date() },{ new: true }
         );
@@ -86,7 +111,7 @@ async function deleteForum(req, res) {
 
         const deletedForum = await Forum.findByIdAndDelete(req.params.id);
 
-        if (!deletedForum) {
+        if (!deletedForum) {    
             return res.status(404).send('Forum not found');
         }
 
@@ -97,4 +122,4 @@ async function deleteForum(req, res) {
     }
 }
 
-module.exports = { addForum, showAllForums, showForumById, updateForum, deleteForum };
+module.exports = { addForum, showAllForums, showForumById, updateForum, deleteForum ,upload};

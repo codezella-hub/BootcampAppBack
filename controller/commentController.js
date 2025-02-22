@@ -41,20 +41,23 @@ async function addComment(req, res) {
 // Afficher tous les commentaires d'un forum
 async function showCommentsByForum(req, res) {
     try {
-        
-
-        // Vérifier si le forum existe
-        const forum = await Forum.findById(req.params.forumId);
-        if (!forum) {
-            return res.status(404).send('Forum not found');
-        }
-
-        res.status(200).json(forum.comments);
+      // Vérifier si le forum existe
+      const forum = await Forum.findById(req.params.forumId).populate('comments');
+      if (!forum) {
+        return res.status(404).send('Forum not found');
+      }
+  
+      // Extraire le contenu des commentaires
+      const commentsContent = forum.comments.map(comment => comment.content);
+  
+      // Renvoyer les commentaires sous forme de tableau contenant uniquement le contenu
+      res.status(200).json(commentsContent);
     } catch (err) {
-        console.error(err);
-        res.status(500).send('Error fetching comments');
+      console.error(err);
+      res.status(500).send('Error fetching comments');
     }
-}
+  }
+  
 
 // Afficher un commentaire par ID
 async function showCommentById(req, res) {
