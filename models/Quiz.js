@@ -23,10 +23,6 @@ const QuizSchema = new mongoose.Schema({
   questions: [QuestionSchema],
 });
 
-// Middleware to update 'updatedAt' on every save
-QuizSchema.pre("save", function (next) {
-  this.updatedAt = Date.now();
-  next();
-});
+
 
 module.exports = mongoose.model("Quiz", QuizSchema);

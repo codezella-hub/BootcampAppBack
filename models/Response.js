@@ -14,7 +14,7 @@ const ResponseSchema = new mongoose.Schema({
   isPassed: Boolean, // True if the user passed
   attemptNumber: Number, // Number of attempts
   timeTaken: Number, // Time in seconds
-  dateAttempted: { default: Date.now, immutable: true }, // Auto-set date, immutable
+  dateAttempted: { type: Date, default: Date.now, immutable: true }, // Fixed field
 });
 
 module.exports = mongoose.model("Response", ResponseSchema);

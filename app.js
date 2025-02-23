@@ -2,7 +2,7 @@ const express = require('express');
 const mongo = require('mongoose');
 const db = require('./config/db.json');
 const categoryRouter = require('./routes/categoryRoute');
-const courseRouter = require('./routes/courseRoute');
+const courseRouter = require('./routes/courseRoutes');
 const courseDetailsRouter = require('./routes/courseDetailsRoute');
 const subCourseRouter = require('./routes/SubCourseRoute');
 const videoRouter = require('./routes/videoRoute');
@@ -11,6 +11,8 @@ const userRouter = require('./routes/userRoute');
 const forumRoutes = require('./routes/forumRoutes');
 const commentRoutes = require('./routes/commentRoutes');
 const likeRoutes = require('./routes/likeRoutes');
+const quizzRouts = require('./routes/quizRoutes');
+const responseRoute = require('./routes/responseRoutes');
 
 const path = require('path');
 require('dotenv').config();
@@ -57,6 +59,8 @@ app.use('/api', userRouter);
 app.use('/api',forumRoutes);
 app.use('/api',commentRoutes);
 app.use('/api',likeRoutes);
+app.use('/api',quizzRouts);
+app.use('/api',responseRoute);
 
 // Start the server on port 3000
 app.listen(3000, () => {
