@@ -7,6 +7,7 @@ const validate = require('../middleware/validate');
 router.post('/forums', forumController.upload.single('image'),validate.validateForum, forumController.addForum);
 router.get('/forums', forumController.showAllForums);
 router.get('/forums/:id', forumController.showForumById);
+router.get('/forums/user/:id', forumController.showForumsByUser);
 router.put('/forums/:id', validate.validateForum, forumController.updateForum);
 router.delete('/forums/:id', forumController.deleteForum);
 

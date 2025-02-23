@@ -1,8 +1,11 @@
 const Forum = require("../models/forum")
+
 const User = require("../models/user"); 
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const commentForum = require("../models/commentForum");
+const LikeForum = require("../models/LikeForum");
 
 const uploadDir = 'uploads/forum/';
 if (!fs.existsSync(uploadDir)) {
@@ -82,6 +85,22 @@ async function showForumById(req, res) {
         res.status(500).send('Error fetching forum');
     }
 }
+// Afficher les forums d'un utilisateur spécifique
+async function showForumsByUser(req, res) {
+    try {
+        const forums = await Forum.find({ user: req.params.id });
+
+        if (forums.length === 0) {
+            return res.status(404).send('No forums found for this user');
+        }
+
+        res.status(200).json(forums);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error fetching forums');
+    }
+}
+
 
 // Mettre à jour un forum
 async function updateForum(req, res) {
@@ -108,18 +127,24 @@ async function updateForum(req, res) {
 async function deleteForum(req, res) {
     try {
         
+        await commentForum.deleteMany({ forumId: req.params.id });
 
+       
+        await LikeForum.deleteMany({ forumId: req.params.id });
+
+        
         const deletedForum = await Forum.findByIdAndDelete(req.params.id);
 
         if (!deletedForum) {    
             return res.status(404).send('Forum not found');
         }
 
-        res.status(200).send('Forum deleted');
+        res.status(200).send('Forum and related comments and likes deleted');
     } catch (err) {
         console.error(err);
         res.status(500).send('Error deleting forum');
     }
 }
 
-module.exports = { addForum, showAllForums, showForumById, updateForum, deleteForum ,upload};
+
+module.exports = { addForum, showAllForums, showForumById, updateForum, deleteForum, showForumsByUser ,upload};
