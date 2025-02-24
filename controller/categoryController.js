@@ -66,7 +66,9 @@ async function getCategory(req, res) {
         if (!category) {
             return res.status(404).json({ message: 'Category not found' });
         }
-        res.status(200).json(category);
+        //res.status(200).json(category);
+                //res.status(201).json(newCategory);
+                res.status(201).json({ status: (201), category });
     } catch (err) {
         console.error(err);
         res.status(500).send('Error fetching category');
@@ -88,7 +90,8 @@ async function updateCategory(req, res) {
             return res.status(404).json({ message: 'Category not found' });
         }
 
-        res.status(200).json(updatedCategory);
+        //res.status(200).json(updatedCategory);
+        res.status(201).json({ status: (201), message: 'Category updated successfully', updatedCategory });
     } catch (err) {
         console.error(err);
         res.status(500).send('Error updating category');
@@ -96,21 +99,21 @@ async function updateCategory(req, res) {
 }
 
 
-// Delete category by ID
-async function deleteCategory(req, res) {
-    try {
-        const deletedCategory = await Category.findByIdAndDelete(req.params.id);
+    // Delete category by ID
+    async function deleteCategory(req, res) {
+        try {
+            const deletedCategory = await Category.findByIdAndDelete(req.params.id);
 
-        if (!deletedCategory) {
-            return res.status(404).json({ message: 'Category not found' });
+            if (!deletedCategory) {
+                return res.status(404).json({ message: 'Category not found' });
+            }
+
+            res.status(200).json({ message: 'Category deleted successfully' });
+        } catch (err) {
+            console.error(err);
+            res.status(500).send('Error deleting category');
         }
-
-        res.status(200).json({ message: 'Category deleted successfully' });
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Error deleting category');
     }
-}
 
 // Export all functions
 module.exports = {
