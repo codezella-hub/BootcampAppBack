@@ -45,6 +45,24 @@ async function getSubCourse(req, res) {
         res.status(500).send('Error fetching subCourse');
     }
 }
+
+// Get all SubCourses that belong to a specific Course
+async function getSubCoursesByCourse(req, res) {
+    try {
+        const { id } = req.params; // Extract course ID from request parameters
+        const subCourses = await SubCourse.find({ course: id }).populate('course'); 
+
+        if (subCourses.length === 0) {
+            return res.status(404).json({ message: 'No SubCourses found for this Course' });
+        }
+
+        res.status(200).json(subCourses);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error fetching subCourses');
+    }
+}
+
 // Update SubCourse by ID
 async function updateSubCourse(req, res) {
     try {
@@ -80,6 +98,7 @@ module.exports = {
     createSubCourse,
     getSubCourses,
     getSubCourse,
+    getSubCoursesByCourse,
     updateSubCourse,
     deleteSubCourse
 };
