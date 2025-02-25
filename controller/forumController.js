@@ -105,23 +105,28 @@ async function showForumsByUser(req, res) {
 // Mettre à jour un forum
 async function updateForum(req, res) {
     try {
-        
-        const { title, description,categorie } = req.body;
-        const image = req.file ? `/uploads/forum/${req.file.filename}` : null;
-        const updatedForum = await Forum.findByIdAndUpdate(
-            req.params.id,{ title, description, image, categorie,updatedAt: new Date() },{ new: true }
-        );
-
-        if (!updatedForum) {
-            return res.status(404).send('Forum not found');
-        }
-
-        res.status(200).json(updatedForum);
+      const { title, description, categorie, image } = req.body;
+      
+      // Si une nouvelle image est envoyée via req.file, utilisez-la
+      const imageUrl = req.file ? `/uploads/forum/${req.file.filename}` : image;
+  
+      const updatedForum = await Forum.findByIdAndUpdate(
+        req.params.id,
+        { title, description, image: imageUrl, categorie, updatedAt: new Date() },
+        { new: true }
+      );
+  
+      if (!updatedForum) {
+        return res.status(404).send('Forum not found');
+      }
+  
+      res.status(200).json(updatedForum);
     } catch (err) {
-        console.error(err);
-        res.status(500).send('Error updating forum');
+      console.error(err);
+      res.status(500).send('Error updating forum');
     }
-}
+  }
+  
 
 // Supprimer un forum
 async function deleteForum(req, res) {
