@@ -57,6 +57,7 @@ async function removeLike(req, res) {
         // Retirer le like du forum
         const forum = await Forum.findById(forumId);
         forum.likes = forum.likes.filter(likeId => likeId.toString() !== existingLike._id.toString());
+        forum.likeCount--;
         await forum.save();
 
         res.status(200).send('Like removed');
