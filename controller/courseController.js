@@ -50,7 +50,8 @@ async function addCourse(req, res) {
 
         await newCourse.save();
 
-        res.status(201).json(newCourse);
+        //res.status(201).json(newCourse);
+        res.status(201).json({ status: (201), message: 'newCourse added successfully', newCourse });
     } catch (err) {
         console.error(err);
         res.status(500).send('Error saving course');
