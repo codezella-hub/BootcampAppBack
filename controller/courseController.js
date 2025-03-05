@@ -81,7 +81,8 @@ async function updateCourse(req, res) {
             return res.status(404).json({ message: 'Course not found' });
         }
 
-        res.status(200).json(updatedCourse);
+        //res.status(200).json(updatedCourse);
+        res.status(201).json({ status: (201), message: 'Course updated  successfully', updatedCourse });
     } catch (err) {
         console.error(err);
         res.status(500).send('Error updating course');
