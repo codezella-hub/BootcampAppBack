@@ -25,14 +25,29 @@ const upload = multer({ storage });
 // Add new course (with image upload)
 async function addCourse(req, res) {
     try {
-        const { title, description, price, category } = req.body;
+        const { 
+            title, description, price, prerequisites, objectives, 
+            targetAudience, language, courseDuration, rating, subtitles, category 
+        } = req.body;
+
         const courseImage = req.file ? `/uploads/${req.file.filename}` : null; // Save correct path
 
-        if (!title || !description || !price || !category || !courseImage) {
+        // Validate required fields
+        if (!title || !description || !price || !prerequisites || !objectives || !targetAudience ||
+            !language || !courseDuration || !rating || !subtitles || !category || !courseImage) {
             return res.status(400).json({ message: 'All fields are required' });
         }
 
-        const newCourse = new Course({ title, description, price, courseImage, category });
+        // Validate price and courseDuration as numbers
+        if (isNaN(price) || isNaN(courseDuration) || isNaN(rating)) {
+            return res.status(400).json({ message: 'Price, course duration, and rating must be numbers' });
+        }
+
+        const newCourse = new Course({ 
+            title, description, price, courseImage, prerequisites, objectives, 
+            targetAudience, language, courseDuration, rating, subtitles, category 
+        });
+
         await newCourse.save();
 
         res.status(201).json(newCourse);
@@ -45,8 +60,15 @@ async function addCourse(req, res) {
 // Update course by ID (with optional image upload)
 async function updateCourse(req, res) {
     try {
-        const { title, description, price, category } = req.body;
-        let updateData = { title, description, price, category };
+        const { 
+            title, description, price, prerequisites, objectives, 
+            targetAudience, language, courseDuration, rating, subtitles, category 
+        } = req.body;
+
+        let updateData = { 
+            title, description, price, prerequisites, objectives, 
+            targetAudience, language, courseDuration, rating, subtitles, category 
+        };
 
         if (req.file) {
             updateData.courseImage = `/uploads/${req.file.filename}`;
