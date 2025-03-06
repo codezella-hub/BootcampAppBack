@@ -16,7 +16,8 @@ async function createSubCourse(req, res) {
         });
 
         await newSubCourse.save();
-        res.status(201).json(newSubCourse);
+        //res.status(201).json(newSubCourse);
+        res.status(201).json({ status: (201), message: 'SubCourse updated  successfully', newSubCourse });
     } catch (err) {
         console.error(err);
         res.status(500).send('Error creating subCourse');
