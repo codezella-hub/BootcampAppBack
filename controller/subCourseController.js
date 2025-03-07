@@ -76,7 +76,8 @@ async function updateSubCourse(req, res) {
             return res.status(404).json({ message: 'SubCourse not found' });
         }
 
-        res.status(200).json(updatedSubCourse);
+        //res.status(200).json(updatedSubCourse);
+        res.status(201).json({ status: (201), message: 'SubCourse updated  successfully', updatedSubCourse });
     } catch (err) {
         console.error(err);
         res.status(500).send('Error updating subCourse');
