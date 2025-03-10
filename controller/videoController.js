@@ -111,7 +111,8 @@ const updateVideo = async (req, res) => {
         }
 
         // Return the updated video
-        res.status(200).json(updatedVideo);
+        //res.status(200).json(updatedVideo);
+        res.status(200).json({ status: (200), message: 'video updated successfully', updatedVideo });
     } catch (err) {
         console.error(err);
 
@@ -140,4 +141,23 @@ const deleteVideo = async (req, res) => {
     }
 };
 
-module.exports = { addVideo, getVideoById, getAllVideos, updateVideo, deleteVideo };
+// Get Videos by SubCourse
+const getVideosBySubCourse = async (req, res) => {
+    try {
+        const { subCourseId } = req.params;
+        
+        // Find videos associated with the given subCourseId
+        const videos = await Video.find({ subCourse: subCourseId }).populate('user subCourse');
+
+        if (!videos || videos.length === 0) {
+            return res.status(404).json({ message: 'No videos found for this subCourse' });
+        }
+
+        res.status(200).json(videos);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error retrieving videos' });
+    }
+};
+
+module.exports = { addVideo, getVideoById, getAllVideos, updateVideo, deleteVideo , getVideosBySubCourse};

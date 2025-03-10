@@ -5,7 +5,8 @@ const {
     getVideoById,
     getAllVideos,
     updateVideo,
-    deleteVideo
+    deleteVideo,
+    getVideosBySubCourse
 } = require('../controller/videoController');  // Import all controller functions
 
 const router = express.Router();
@@ -40,5 +41,9 @@ router.put('/updateVideo/:id', updateVideo);
 
 // Route to delete a video by ID
 router.delete('/deleteVideo/:id', deleteVideo);
+
+// Route to get videos by subCourse
+router.get('/getVideosBySubCourse/:subCourseId', getVideosBySubCourse);
+
 
 module.exports = router;  // Export the router
