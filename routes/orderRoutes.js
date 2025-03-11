@@ -4,7 +4,7 @@ const OrderController = require("../controller/orderController");
 
 // Middleware for async error handling
 const asyncHandler = (fn) => (req, res, next) =>
-  Promise.resolve(fn(req, res, next)).catch(next);
+    Promise.resolve(fn(req, res, next)).catch(next);
 
 // Create an order
 router.post("/", asyncHandler(OrderController.createOrder));
@@ -15,10 +15,13 @@ router.get("/", asyncHandler(OrderController.getOrders));
 // Get order by ID
 router.get("/:id", asyncHandler(OrderController.getOrderById));
 
-// Update order by ID
-router.put("/:id", asyncHandler(OrderController.updateOrder));
+// Update quantity
+router.put("/quantity", asyncHandler(OrderController.updateQuantity));
 
-// Delete order by ID
+// Apply coupon
+router.post("/apply-coupon", asyncHandler(OrderController.applyCoupon));
+
+// Delete order
 router.delete("/:id", asyncHandler(OrderController.deleteOrder));
 
 module.exports = router;
