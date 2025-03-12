@@ -10,6 +10,8 @@ router.get('/courses', courseController.getCourses);
 
 // Get a single course by ID
 router.get('/course/:id', courseController.getCourse);
+// Get courses by category ID
+router.get('/courseCategory/:title', courseController.getCoursesByCategory);
 
 // Update course by ID (with optional image upload)
 router.put('/updateCourse/:id', courseController.upload.single('courseImage'), courseController.updateCourse);

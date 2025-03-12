@@ -2,6 +2,7 @@ const multer = require('multer');
 const path = require('path');
 const Course = require('../models/course');
 const fs = require('fs');
+const category = require('../models/category');
 
 // Ensure uploads folder exists
 const uploadDir = 'uploads/';
@@ -103,6 +104,30 @@ async function deleteCourse(req, res) {
         res.status(500).send('Error deleting course');
     }
 }
+// Get courses by category name
+async function getCoursesByCategory(req, res) {
+    try {
+        // Trouver la catégorie avec son nom
+        const categorie = await category.findOne({ title: req.params.title });
+
+        if (!categorie) {
+            return res.status(404).json({ message: 'Category not found' });
+        }
+
+        // Trouver les cours associés à cette catégorie
+        const courses = await Course.find({ category: categorie._id }).populate('category', 'title');
+
+        if (courses.length === 0) {
+            return res.status(404).json({ message: 'No courses found for this category' });
+        }
+
+        res.status(200).json(courses);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error fetching courses');
+    }
+}
+
 
 // Export all functions along with `upload` middleware
 module.exports = {
@@ -111,5 +136,6 @@ module.exports = {
     getCourse,
     updateCourse,
     deleteCourse,
+    getCoursesByCategory,
     upload
 };

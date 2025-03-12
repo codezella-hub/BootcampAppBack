@@ -112,6 +112,7 @@ async function deleteCategory(req, res) {
     }
 }
 
+
 // Export all functions
 module.exports = {
     addCategory,
