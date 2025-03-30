@@ -27,14 +27,14 @@ async function addCourse(req, res) {
     try {
         const { 
             title, description, price, prerequisites, objectives, 
-            targetAudience, language, courseDuration, rating, subtitles, category 
+            targetAudience, language, courseDuration, rating, subtitles, category, user
         } = req.body;
 
         const courseImage = req.file ? `/uploads/${req.file.filename}` : null; // Save correct path
 
         // Validate required fields
         if (!title || !description || !price || !prerequisites || !objectives || !targetAudience ||
-            !language || !courseDuration || !rating || !subtitles || !category || !courseImage) {
+            !language || !courseDuration || !rating || !subtitles || !category || !courseImage || !user) {
             return res.status(400).json({ message: 'All fields are required' });
         }
 
@@ -45,12 +45,11 @@ async function addCourse(req, res) {
 
         const newCourse = new Course({ 
             title, description, price, courseImage, prerequisites, objectives, 
-            targetAudience, language, courseDuration, rating, subtitles, category 
+            targetAudience, language, courseDuration, rating, subtitles, category, user
         });
 
         await newCourse.save();
 
-        //res.status(201).json(newCourse);
         res.status(201).json({ status: (201), message: 'newCourse added successfully', newCourse });
     } catch (err) {
         console.error(err);
@@ -63,12 +62,12 @@ async function updateCourse(req, res) {
     try {
         const { 
             title, description, price, prerequisites, objectives, 
-            targetAudience, language, courseDuration, rating, subtitles, category 
+            targetAudience, language, courseDuration, rating, subtitles, category, user
         } = req.body;
 
         let updateData = { 
             title, description, price, prerequisites, objectives, 
-            targetAudience, language, courseDuration, rating, subtitles, category 
+            targetAudience, language, courseDuration, rating, subtitles, category, user
         };
 
         if (req.file) {
@@ -81,8 +80,7 @@ async function updateCourse(req, res) {
             return res.status(404).json({ message: 'Course not found' });
         }
 
-        //res.status(200).json(updatedCourse);
-        res.status(201).json({ status: (201), message: 'Course updated  successfully', updatedCourse });
+        res.status(201).json({ status: (201), message: 'Course updated successfully', updatedCourse });
     } catch (err) {
         console.error(err);
         res.status(500).send('Error updating course');
@@ -92,7 +90,7 @@ async function updateCourse(req, res) {
 // Get all courses
 async function getCourses(req, res) {
     try {
-        const courses = await Course.find().populate('category');
+        const courses = await Course.find().populate('category').populate('user');
         res.status(200).json(courses);
     } catch (err) {
         console.error(err);
@@ -103,7 +101,7 @@ async function getCourses(req, res) {
 // Get a single course by ID
 async function getCourse(req, res) {
     try {
-        const course = await Course.findById(req.params.id).populate('category');
+        const course = await Course.findById(req.params.id).populate('category').populate('user');
         if (!course) {
             return res.status(404).json({ message: 'Course not found' });
         }
