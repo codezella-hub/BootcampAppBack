@@ -20,4 +20,7 @@ router.put('/updateSubCourse/:id', subCourseController.updateSubCourse);
 // Route to delete course details by ID
 router.delete('/deleteSubCourse/:id', subCourseController.deleteSubCourse);
 
+// In your routes file
+router.get('/subcourses/course/:courseId/user/:userId', subCourseController.getSubCoursesByCourseAndUser);
+
 module.exports = router;

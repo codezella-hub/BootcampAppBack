@@ -27,7 +27,16 @@ async function createSubCourse(req, res) {
 // Get all SubCourses
 async function getSubCourses(req, res) {
     try {
-        const subCourses = await SubCourse.find().populate('course').populate('user');
+        const subCourses = await SubCourse.find()
+            .populate({
+                path: 'course',
+                populate: {
+                    path: 'category',
+                    model: 'Category'
+                }
+            })
+            .populate('user');
+        
         res.status(200).json(subCourses);
     } catch (err) {
         console.error(err);
@@ -35,10 +44,53 @@ async function getSubCourses(req, res) {
     }
 }
 
-// Get a single SubCourse by ID
+// Get all SubCourses for a specific course and user
+async function getSubCoursesByCourseAndUser(req, res) {
+    try {
+        const { courseId, userId } = req.params;
+
+        if (!courseId || !userId) {
+            return res.status(400).json({ message: 'Both courseId and userId are required' });
+        }
+
+        const subCourses = await SubCourse.find({
+            course: courseId,
+            user: userId
+        })
+        .populate({
+            path: 'course',
+            populate: {
+                path: 'category',
+                model: 'Category'
+            }
+        })
+        .populate('user');
+
+        if (subCourses.length === 0) {
+            return res.status(404).json({ 
+                message: 'No subcourses found for this course and user combination' 
+            });
+        }
+
+        res.status(200).json(subCourses);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error fetching subCourses', error: err.message });
+    }
+}
+
 async function getSubCourse(req, res) {
     try {
-        const subCourse = await SubCourse.findById(req.params.id).populate('course').populate('user');
+        const subCourse = await SubCourse.findById(req.params.id)
+            .populate({
+                path: 'course',
+                populate: {
+                    path: 'category',
+                    model: 'Category'
+                }
+            })
+            .populate('user');
+        
         if (!subCourse) {
             return res.status(404).json({ message: 'SubCourse not found' });
         }
@@ -53,7 +105,15 @@ async function getSubCourse(req, res) {
 async function getSubCoursesByCourse(req, res) {
     try {
         const { id } = req.params;
-        const subCourses = await SubCourse.find({ course: id }).populate('course').populate('user');
+        const subCourses = await SubCourse.find({ course: id })
+            .populate({
+                path: 'course',
+                populate: {
+                    path: 'category',
+                    model: 'Category'
+                }
+            })
+            .populate('user');
 
         if (subCourses.length === 0) {
             return res.status(404).json({ message: 'No SubCourses found for this Course' });
@@ -113,5 +173,6 @@ module.exports = {
     getSubCourse,
     getSubCoursesByCourse,
     updateSubCourse,
+    getSubCoursesByCourseAndUser,
     deleteSubCourse
 };

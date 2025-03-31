@@ -2,6 +2,7 @@ const multer = require('multer');
 const path = require('path');
 const Course = require('../models/course');
 const fs = require('fs');
+const mongoose = require('mongoose');
 
 // Ensure uploads folder exists
 const uploadDir = 'uploads/';
@@ -98,6 +99,60 @@ async function getCourses(req, res) {
     }
 }
 
+// Get all courses for a specific user
+// Get all courses for a specific user
+async function getCoursesByUser(req, res) {
+    try {
+        const { userId } = req.params;
+
+        // Validate input
+        if (!userId) {
+            return res.status(400).json({ 
+                success: false,
+                message: 'User ID is required' 
+            });
+        }
+
+        // Check if userId is a valid MongoDB ObjectId
+        if (!mongoose.isValidObjectId(userId)) {
+            return res.status(400).json({ 
+                success: false,
+                message: 'Invalid user ID format' 
+            });
+        }
+
+        // Find courses and populate related data
+        const courses = await Course.find({ user: userId })
+            .populate('category')
+            .populate('user', '-password') // Exclude sensitive data like password
+            .sort({ createdAt: -1 }); // Sort by newest first
+
+        if (!courses || courses.length === 0) {
+            return res.status(200).json({ 
+                success: true,
+                count: 0,
+                message: 'No courses found for this user',
+                courses: []
+            });
+        }
+
+        // Successful response
+        res.status(200).json({
+            success: true,
+            count: courses.length,
+            courses
+        });
+
+    } catch (err) {
+        console.error('Error in getCoursesByUser:', err);
+        res.status(500).json({ 
+            success: false,
+            message: 'Server error while fetching courses',
+            error: process.env.NODE_ENV === 'development' ? err.message : undefined
+        });
+    }
+}
+
 // Get a single course by ID
 async function getCourse(req, res) {
     try {
@@ -133,5 +188,6 @@ module.exports = {
     getCourse,
     updateCourse,
     deleteCourse,
+    getCoursesByUser,
     upload
 };
