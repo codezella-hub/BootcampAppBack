@@ -12,6 +12,8 @@ const forumRoutes = require('./routes/forumRoutes');
 const commentRoutes = require('./routes/commentRoutes');
 const likeRoutes = require('./routes/likeRoutes');
 const videoProgressRoutes = require('./routes/videoProgressRoute');
+// Add this with other route imports
+const translateRouter = require('./routes/translateRoute');
 
 const path = require('path');
 require('dotenv').config();
@@ -38,6 +40,7 @@ app.get('/', (req, res) => {
 });
 
 
+
 // Routes
 
 
@@ -59,6 +62,8 @@ app.use('/api',forumRoutes);
 app.use('/api',commentRoutes);
 app.use('/api',likeRoutes);
 app.use('/api',videoProgressRoutes);
+// Add this with other route middleware
+app.use('/api', translateRouter);
 
 // Start the server on port 3000
 app.listen(3000, () => {
