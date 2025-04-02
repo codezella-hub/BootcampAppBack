@@ -50,7 +50,7 @@ app.get('/', (req, res) => {
 
 // Configuration de CORS
 const corsOptions = {
-    origin: 'http://localhost:5173', // Remplacez par l'origine de votre frontend
+    origin: 'http://localhost:5174', // Remplacez par l'origine de votre frontend
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Méthodes autorisées
     allowedHeaders: ['Content-Type', 'Authorization'], // En-têtes autorisés
     credentials: true, // Permet l'envoi de cookies et d'authentification

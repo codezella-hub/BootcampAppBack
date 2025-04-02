@@ -42,7 +42,12 @@ const login = async (req,res) => {
 
 
   const logout = async (req,res) => {
-    res.clearCookie("token");
+    res.clearCookie("token", {
+      httpOnly: true, 
+      secure: false, // À enlever si tu es en développement sans HTTPS
+      sameSite: "Strict",
+      path: "/",
+    });
       res.status(200).json({ success: true, message: "Logged out successfully" });
   }
   const checkAuth = async (req, res) => {
