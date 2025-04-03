@@ -32,12 +32,14 @@ const createVideoProgress = async (req, res) => {
 };
 
 // Get Video Progress by ID
+// Get Video Progress by Video ID
 const getVideoProgressById = async (req, res) => {
     try {
-        const { id } = req.params;
+        const { id } = req.params; // Video ID
 
-        // Find the video progress by ID
-        const videoProgress = await VideoProgress.findById(id).populate('user video');
+        // Find the video progress by Video ID
+        const videoProgress = await VideoProgress.findOne({ video: id }).populate('user video');
+        
         if (!videoProgress) {
             return res.status(404).json({ message: 'Video progress not found' });
         }
@@ -49,6 +51,25 @@ const getVideoProgressById = async (req, res) => {
         res.status(500).json({ message: 'Error retrieving video progress' });
     }
 };
+
+
+const getVideoProgressByVideoId = async (req, res) => {
+    try {
+        const { videoId } = req.params;
+        console.log("Received Video ID:", videoId);
+
+        const videoProgress = await VideoProgress.findOne({ video: videoId }).populate('user video');
+        if (!videoProgress) {
+            return res.status(404).json({ message: 'No progress found for this video' });
+        }
+
+        res.status(200).json(videoProgress);
+    } catch (err) {
+        console.error("Error:", err);
+        res.status(500).json({ message: 'Error retrieving video progress' });
+    }
+};
+
 
 // Get All Video Progresses
 const getAllVideoProgresses = async (req, res) => {
@@ -62,35 +83,35 @@ const getAllVideoProgresses = async (req, res) => {
     }
 };
 
-// Update Video Progress
+// Update Video Progress (with upsert functionality)
 const updateVideoProgress = async (req, res) => {
     try {
-        const { id } = req.params;
-        const { watchedDuration, completedPercentage, completed } = req.body;
+        const { user, video, currentTime, duration } = req.body;
 
-        // Find and update the video progress
-        const updatedVideoProgress = await VideoProgress.findByIdAndUpdate(
-            id,
-            { watchedDuration, completedPercentage, completed, lastWatched: Date.now() },
-            { new: true, runValidators: true }
+        // Calculate progress metrics
+        const watchedDuration = currentTime;
+        const completedPercentage = (currentTime / duration) * 100;
+        const completed = completedPercentage >= 95; // Only mark complete if watched 95%+
+
+        // Update or create progress entry
+        const updatedVideoProgress = await VideoProgress.findOneAndUpdate(
+            { user, video },
+            { 
+                watchedDuration,
+                completedPercentage,
+                completed, // Now depends on percentage
+                lastWatched: Date.now() 
+            },
+            { 
+                new: true, 
+                runValidators: true,
+                upsert: true 
+            }
         );
 
-        // Check if the video progress was found and updated
-        if (!updatedVideoProgress) {
-            return res.status(404).json({ message: 'Video progress not found' });
-        }
-
-        // Return the updated video progress
         res.status(200).json(updatedVideoProgress);
     } catch (err) {
         console.error(err);
-
-        // Handle validation errors
-        if (err.name === 'ValidationError') {
-            return res.status(400).json({ message: err.message });
-        }
-
-        // Handle other errors
         res.status(500).json({ message: 'Error updating video progress' });
     }
 };
@@ -114,10 +135,24 @@ const deleteVideoProgress = async (req, res) => {
     }
 };
 
+// Get Video Progress by User and Video
+const getVideoProgressByUserAndVideo = async (req, res) => {
+    try {
+        const { user, video } = req.query;
+        const progress = await VideoProgress.findOne({ user, video });
+        res.status(progress ? 200 : 404).json(progress || { message: 'Progress not found' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error retrieving progress' });
+    }
+};
+
 module.exports = {
     createVideoProgress,
     getVideoProgressById,
     getAllVideoProgresses,
     updateVideoProgress,
     deleteVideoProgress,
+    getVideoProgressByUserAndVideo,
+    getVideoProgressByVideoId,
 };

@@ -2,20 +2,15 @@ const express = require('express');
 const router = express.Router();
 const VideoProgressController = require('../controller/VideoProgressController');
 
+// Correct route order
+router.get('/videoProgress', VideoProgressController.getVideoProgressByUserAndVideo); // This should come first
+router.get('/videoProgress/:id', VideoProgressController.getVideoProgressById); // Then this
+router.get('/getVideoProgressByVideoId/:id', VideoProgressController.getVideoProgressByVideoId); // Then this
 
-// Create Video Progress
+// The rest of your routes
 router.post('/AddVideoProgress', VideoProgressController.createVideoProgress);
-
-// Get Video Progress by ID
-router.get('/videoProgress/:id', VideoProgressController.getVideoProgressById);
-
-// Get All Video Progresses
 router.get('/videoProgresses', VideoProgressController.getAllVideoProgresses);
-
-// Update Video Progress
 router.put('/UpdateVideoProgress/:id', VideoProgressController.updateVideoProgress);
-
-// Delete Video Progress
 router.delete('/videoProgress/:id', VideoProgressController.deleteVideoProgress);
 
 module.exports = router;
