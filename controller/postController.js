@@ -130,8 +130,8 @@ async function deletePost(req, res) {
 async function addCandidat(req, res) {
     try {
         const { name, email, phone, posteId, idUser } = req.body;
-        const cv = req.files['cv'] ? `/uploads/candidats/${req.files['cv'][0].filename}` : '';
-        const diplome = req.files['diplome'] ? `/uploads/candidats/${req.files['diplome'][0].filename}` : '';
+        const cv = req.files['cv']?.[0]?.filename || null;
+        const diplome = req.files['diplome']?.[0]?.filename || null;
 
         const foundUser = await User.findById(idUser);
         if (!foundUser) {
@@ -241,7 +241,7 @@ async function showCandidatsByPost(req, res) {
         const postId = req.params.postId;
 
         // Recherche des candidats associés à l'offre d'emploi
-        const candidats = await Candidat.find({ postId });
+        const candidats = await Candidat.find({ posteId: postId });
         if (candidats.length === 0) {
             return res.status(404).send('Aucun candidat trouvé pour cette offre');
         }

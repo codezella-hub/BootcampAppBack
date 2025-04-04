@@ -59,6 +59,8 @@ app.use('/api',forumRoutes);
 app.use('/api',commentRoutes);
 app.use('/api',likeRoutes);
 app.use('/api',postRoutes);
+app.use('/uploads', express.static('uploads'));
+
 
 // Start the server on port 3000
 app.listen(3000, () => {

@@ -8,10 +8,17 @@ router.get('/post/all', postController.showAllPosts);
 router.get('/post/:id', postController.showPostById);
 router.get('/post/user/:id', postController.showPostsByUser);
 router.put('/post/update/:id', postController.upload.single('file'), postController.updatePost);
-router.delete('post/delete/:id', postController.deletePost);
+router.delete('/post/delete/:id', postController.deletePost);
 
 // Routes pour les candidats
-router.post('/candidat/add', postController.upload.array('files', 5), postController.addCandidat);
+router.post(
+    '/candidat/add',
+    postController.upload.fields([
+      { name: 'cv', maxCount: 1 },
+      { name: 'diplome', maxCount: 1 }
+    ]),
+    postController.addCandidat
+  );
 router.get('/candidat/all', postController.showAllCandidats);
 router.get('/candidat/:id', postController.showCandidatById);
 router.get('/candidat/post/:postId', postController.showCandidatsByPost);

@@ -6,4 +6,4 @@ node_modules/
 
 # Package lock file (optional)
 package-lock.json
-
+uploads/
