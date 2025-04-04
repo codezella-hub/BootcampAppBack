@@ -23,10 +23,9 @@ async function validateQuizData(req, res, next) {
     try {
         const Schema = yup.object().shape({
             title: yup.string().required(),
-            subCourse: yup.string().required(),
+            courseId: yup.string().required(),
             difficulty: yup.string().required(),
             totalQuestions: yup.number().required(),
-            maxAttempts: yup.number().required(),
             timeLimit: yup.number().required(),
             questions: yup.array().of(
                 yup.object().shape({

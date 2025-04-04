@@ -5,7 +5,7 @@ const Forum = require("../models/forum");
 // Create a new quiz
 async function createQuiz(req, res) {
     try {
-        const { title, category, difficulty, totalQuestions, maxAttempts, timeLimit, createdBy, questions } = req.body;
+        const { title, category, difficulty, totalQuestions, timeLimit, createdBy, questions } = req.body;
         // const foundUser = await User.findById(createdBy);
         // if (!foundUser) {
         //     return res.status(404).send("User not found");
@@ -16,7 +16,6 @@ async function createQuiz(req, res) {
             category,
             difficulty,
             totalQuestions,
-            maxAttempts,
             timeLimit,
             createdBy,
             createdAt: new Date(),
@@ -61,10 +60,10 @@ async function getQuizById(req, res) {
 // Update a quiz by ID
 async function updateQuiz(req, res) {
     try {
-        const { title, category, difficulty, totalQuestions, maxAttempts, timeLimit, questions } = req.body;
+        const { title, category, difficulty, totalQuestions, timeLimit, questions } = req.body;
         const updatedQuiz = await Quiz.findByIdAndUpdate(
             req.params.id,
-            { title, category, difficulty, totalQuestions, maxAttempts, timeLimit, questions, updatedAt: new Date() },
+            { title, category, difficulty, totalQuestions, timeLimit, questions, updatedAt: new Date() },
             { new: true }
         );
         if (!updatedQuiz) {
