@@ -103,6 +103,23 @@ exports.getOrderById = async (req, res) => {
     }
 };
 
+
+exports.getOrderByUserId = async (req, res) => {
+    try {
+        console.log("Fetching order by userId:", req.params.userid);
+        const query = { userid: req.params.userid};
+        const order = await Order.find(query);
+        if (!order) {
+            return res.status(404).json({ message: "Order by userId not found" });
+        }
+        res.status(200).json(order);
+
+    } catch (error) {
+        console.error("Error fetching order:", error);
+        res.status(500).json({ message: "Server Error", error: error.message });
+    }
+};
+
 /**
  * Update order quantity
  */

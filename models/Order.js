@@ -1,6 +1,16 @@
 const mongoose = require("mongoose");
 
 const OrderSchema = new mongoose.Schema({
+    userid: { 
+        type: Number, 
+        required: true, 
+        validate: {
+            validator: function(value) {
+                return /^\d{8}$/.test(value.toString()); 
+            },
+            message: 'CIN must be exactly 8 digits.'
+        }
+    },
     orderDate: {
         type: Date,
         default: Date.now,
