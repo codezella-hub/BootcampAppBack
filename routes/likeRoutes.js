@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const likeController = require('../controller/likeController');
-const validate = require('../middleware/validate');
+const validate = require('../middleware/forumValidate');
 
 
 router.post('/likes', likeController.addLike);

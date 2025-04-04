@@ -11,6 +11,7 @@ const userRouter = require('./routes/userRoute');
 const forumRoutes = require('./routes/forumRoutes');
 const commentRoutes = require('./routes/commentRoutes');
 const likeRoutes = require('./routes/likeRoutes');
+const postRoutes = require('./routes/postRoute');
 
 const path = require('path');
 require('dotenv').config();
@@ -57,6 +58,7 @@ app.use('/api', userRouter);
 app.use('/api',forumRoutes);
 app.use('/api',commentRoutes);
 app.use('/api',likeRoutes);
+app.use('/api',postRoutes);
 
 // Start the server on port 3000
 app.listen(3000, () => {

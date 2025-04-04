@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const forumController = require('../controller/forumController');
-const validate = require('../middleware/validate');
+const validate = require('../middleware/forumValidate');
 
 
 router.post('/forums', forumController.upload.single('image'),validate.validateForum, forumController.addForum);

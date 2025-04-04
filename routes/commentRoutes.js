@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const commentController = require('../controller/commentController');
-const validate = require('../middleware/validate');
+const validate = require('../middleware/forumValidate');
 
 router.post('/comments', validate.validateComment, commentController.addComment);
 router.get('/comments/:forumId', commentController.showCommentsByForum);
