@@ -14,6 +14,7 @@ const likeRoutes = require('./routes/likeRoutes');
 const videoProgressRoutes = require('./routes/videoProgressRoute');
 // Add this with other route imports
 const translateRouter = require('./routes/translateRoute');
+const paypalRouter = require('./routes/paypalRoutes');
 
 const path = require('path');
 require('dotenv').config();
@@ -64,6 +65,7 @@ app.use('/api',likeRoutes);
 app.use('/api',videoProgressRoutes);
 // Add this with other route middleware
 app.use('/api', translateRouter);
+app.use('/api/paypal', paypalRouter);
 
 // Start the server on port 3000
 app.listen(3000, () => {
