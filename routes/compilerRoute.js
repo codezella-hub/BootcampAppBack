@@ -26,7 +26,7 @@ router.post('/run', async (req, res) => {
             }
         });
 
-        // Step 2: Get the Result
+        // Step 2: Get the Result using the token
         const token = data.token;
         setTimeout(async () => {
             const result = await axios.get(`${JUDGE0_URL}/${token}?base64_encoded=true&fields=*`, {
@@ -36,8 +36,18 @@ router.post('/run', async (req, res) => {
                 },
                 timeout: 10000  // Increase the timeout to 10 seconds
             });
-            
-            res.json(result.data);
+
+            const responseData = result.data;
+
+            // Check if there is a compile error
+            if (responseData.status.id === 6) {
+                // Decode the compile output from base64
+                const decodedCompileOutput = Buffer.from(responseData.compile_output, 'base64').toString('utf-8');
+                responseData.compile_output = decodedCompileOutput; // Add decoded output to response
+            }
+
+            // Send the result or error back to the client
+            res.json(responseData);
         }, 3000); // Wait 3 seconds before fetching the result
 
     } catch (error) {
