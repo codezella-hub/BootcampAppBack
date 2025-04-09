@@ -2,6 +2,7 @@ const express = require('express');
 const mongo = require('mongoose');
 const db = require('./config/db.json');
 const cookieParser = require("cookie-parser");
+const passportSetup = require("./services/passport");
 const categoryRouter = require('./routes/categoryRoute');
 const courseRouter = require('./routes/courseRoutes');
 const courseDetailsRouter = require('./routes/courseDetailsRoute');
@@ -10,15 +11,19 @@ const videoRouter = require('./routes/videoRoute');
 const registraionRouter = require("./routes/registrationRoute");
 
 const authRouter = require("./routes/authRoutes");
-
+const twoFaRouter = require("./routes/2faAuthRoutes");
 const resetPasswordRoutes = require("./routes/resetPasswordRoute");
+const updateProfileRoutes = require("./routes/updateProfileRoutes");
+const adminUserRoutes = require("./routes/adminUserRoutes");
 //const AuthRoutes = require('./routes/auth.routes');
 const forumRoutes = require('./routes/forumRoutes');
 const commentRoutes = require('./routes/commentRoutes');
 const likeRoutes = require('./routes/likeRoutes');
 const quizzRouts = require('./routes/quizRoutes');
 const responseRoute = require('./routes/responseRoutes');
-
+const authGo = require('./routes/auth.go.js');
+const passport = require("passport");
+const session = require("express-session"); 
 const path = require('path');
 require('dotenv').config();
 const cors = require('cors');
@@ -34,8 +39,7 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true })); // Added this line for form data
-
-
+app.use(passport.initialize());
 // Serve uploaded images statically
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -50,7 +54,7 @@ app.get('/', (req, res) => {
 
 // Configuration de CORS
 const corsOptions = {
-    origin: 'http://localhost:5174', // Remplacez par l'origine de votre frontend
+    origin: 'http://localhost:4000', // Remplacez par l'origine de votre frontend
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Méthodes autorisées
     allowedHeaders: ['Content-Type', 'Authorization'], // En-têtes autorisés
     credentials: true, // Permet l'envoi de cookies et d'authentification
@@ -66,6 +70,10 @@ app.use('/api', videoRouter);
 
 app.use('/api', authRouter);
 app.use('/api', resetPasswordRoutes);
+app.use('/api', twoFaRouter);
+app.use('/api', updateProfileRoutes);
+app.use('/api', adminUserRoutes);
+app.use('/auth', authGo);
 
 app.use('/api',registraionRouter);
 app.use('/api',forumRoutes);

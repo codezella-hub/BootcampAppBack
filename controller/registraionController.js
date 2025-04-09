@@ -142,8 +142,54 @@ if (isNaN(parsedAge) || parsedAge <= 0 || !Number.isInteger(parsedAge)) {
          res.status(500).json({ success: false, message: "Server error" });
     }
  }
+
+
+ const resendVerificationEmail = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+      // Vérification que l'email est fourni
+      if (!email) {
+          return res.status(400).json({ success: false, message: "Email is required" });
+      }
+
+      // Vérification du format de l'email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+          return res.status(400).json({ success: false, message: "Invalid email format" });
+      }
+
+      // Recherche de l'utilisateur
+      const user = await User.findOne({ email });
+      if (!user) {
+          return res.status(404).json({ success: false, message: "User not found" });
+      }
+
+      // Vérification si l'utilisateur est déjà vérifié
+      if (user.isVerified) {
+          return res.status(400).json({ success: false, message: "Email is already verified" });
+      }
+
+      // Génération d'un nouveau token et mise à jour de la date d'expiration
+      const newVerificationToken = Math.floor(100000 + Math.random() * 900000).toString();
+      user.verificationToken = newVerificationToken;
+      user.verificationTokenExpiresAt = Date.now() + 24 * 60 * 60 * 1000; // 24h
+      await user.save();
+
+      // Envoi du nouvel email de vérification
+      await sendVerificationEmail(user.email, newVerificationToken);
+
+      res.status(200).json({
+          success: true,
+          message: "Verification email resent successfully"
+      });
+  } catch (error) {
+      console.log("error in resendVerificationEmail ", error);
+      res.status(500).json({ success: false, message: "Server error" });
+  }
+}
  
-module.exports = {signUp,verifyEmail}
+module.exports = {signUp,verifyEmail,resendVerificationEmail}
 
 
 
