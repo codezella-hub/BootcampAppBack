@@ -2,7 +2,7 @@ const express = require('express');
 const mongo = require('mongoose');
 const db = require('./config/db.json');
 const categoryRouter = require('./routes/categoryRoute');
-const courseRouter = require('./routes/courseRoute');
+const courseRouter = require('./routes/courseRoutes');
 const courseDetailsRouter = require('./routes/courseDetailsRoute');
 const subCourseRouter = require('./routes/SubCourseRoute');
 const videoRouter = require('./routes/videoRoute');
@@ -16,6 +16,9 @@ const translateRouter = require('./routes/translateRoute');
 const paypalRouter = require('./routes/paypalRoutes');
 const compilerRouter = require('./routes/compilerRoute');
 const postRoutes = require('./routes/postRoute');
+const quizzRouts = require('./routes/quizRoutes');
+const responseRoute = require('./routes/responseRoutes');
+
 
 
 
@@ -75,8 +78,8 @@ app.use('/api/paypal', paypalRouter);
 app.use('/api/compiler', compilerRouter);
 app.use('/api', postRoutes);
 app.use('/uploads', express.static('uploads'));
-
-
+app.use('/api',quizzRouts);
+app.use('/api',responseRoute);  
 
 // Start the server on port 3000
 app.listen(3000, () => {
