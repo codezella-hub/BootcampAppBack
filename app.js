@@ -19,6 +19,7 @@ const compilerRouter = require('./routes/compilerRoute');
 
 
 
+
 require('dotenv').config(); // Load .env at startup
 const path = require('path');
 require('dotenv').config();
@@ -71,6 +72,7 @@ app.use('/api',videoProgressRoutes);
 app.use('/api', translateRouter);
 app.use('/api/paypal', paypalRouter);
 app.use('/api/compiler', compilerRouter);
+
 
 // Start the server on port 3000
 app.listen(3000, () => {
