@@ -3,6 +3,8 @@ const path = require('path');
 const Course = require('../models/course');
 const fs = require('fs');
 const category = require('../models/category');
+const mongoose = require('mongoose');
+
 
 // Ensure uploads folder exists
 const uploadDir = 'uploads/';
@@ -26,17 +28,32 @@ const upload = multer({ storage });
 // Add new course (with image upload)
 async function addCourse(req, res) {
     try {
-        const { title, description, price, category } = req.body;
+        const { 
+            title, description, price, prerequisites, objectives, 
+            targetAudience, language, courseDuration, rating, subtitles, category, user
+        } = req.body;
+
         const courseImage = req.file ? `/uploads/${req.file.filename}` : null; // Save correct path
 
-        if (!title || !description || !price || !category || !courseImage) {
+        // Validate required fields
+        if (!title || !description || !price || !prerequisites || !objectives || !targetAudience ||
+            !language || !courseDuration || !rating || !subtitles || !category || !courseImage || !user) {
             return res.status(400).json({ message: 'All fields are required' });
         }
 
-        const newCourse = new Course({ title, description, price, courseImage, category });
+        // Validate price and courseDuration as numbers
+        if (isNaN(price) || isNaN(courseDuration) || isNaN(rating)) {
+            return res.status(400).json({ message: 'Price, course duration, and rating must be numbers' });
+        }
+
+        const newCourse = new Course({ 
+            title, description, price, courseImage, prerequisites, objectives, 
+            targetAudience, language, courseDuration, rating, subtitles, category, user
+        });
+
         await newCourse.save();
 
-        res.status(201).json(newCourse);
+        res.status(201).json({ status: (201), message: 'newCourse added successfully', newCourse });
     } catch (err) {
         console.error(err);
         res.status(500).send('Error saving course');
@@ -46,8 +63,15 @@ async function addCourse(req, res) {
 // Update course by ID (with optional image upload)
 async function updateCourse(req, res) {
     try {
-        const { title, description, price, category } = req.body;
-        let updateData = { title, description, price, category };
+        const { 
+            title, description, price, prerequisites, objectives, 
+            targetAudience, language, courseDuration, rating, subtitles, category, user
+        } = req.body;
+
+        let updateData = { 
+            title, description, price, prerequisites, objectives, 
+            targetAudience, language, courseDuration, rating, subtitles, category, user
+        };
 
         if (req.file) {
             updateData.courseImage = `/uploads/${req.file.filename}`;
@@ -59,7 +83,7 @@ async function updateCourse(req, res) {
             return res.status(404).json({ message: 'Course not found' });
         }
 
-        res.status(200).json(updatedCourse);
+        res.status(201).json({ status: (201), message: 'Course updated successfully', updatedCourse });
     } catch (err) {
         console.error(err);
         res.status(500).send('Error updating course');
@@ -69,7 +93,7 @@ async function updateCourse(req, res) {
 // Get all courses
 async function getCourses(req, res) {
     try {
-        const courses = await Course.find().populate('category');
+        const courses = await Course.find().populate('category').populate('user');
         res.status(200).json(courses);
     } catch (err) {
         console.error(err);
@@ -77,10 +101,64 @@ async function getCourses(req, res) {
     }
 }
 
+// Get all courses for a specific user
+// Get all courses for a specific user
+async function getCoursesByUser(req, res) {
+    try {
+        const { userId } = req.params;
+
+        // Validate input
+        if (!userId) {
+            return res.status(400).json({ 
+                success: false,
+                message: 'User ID is required' 
+            });
+        }
+
+        // Check if userId is a valid MongoDB ObjectId
+        if (!mongoose.isValidObjectId(userId)) {
+            return res.status(400).json({ 
+                success: false,
+                message: 'Invalid user ID format' 
+            });
+        }
+
+        // Find courses and populate related data
+        const courses = await Course.find({ user: userId })
+            .populate('category')
+            .populate('user', '-password') // Exclude sensitive data like password
+            .sort({ createdAt: -1 }); // Sort by newest first
+
+        if (!courses || courses.length === 0) {
+            return res.status(200).json({ 
+                success: true,
+                count: 0,
+                message: 'No courses found for this user',
+                courses: []
+            });
+        }
+
+        // Successful response
+        res.status(200).json({
+            success: true,
+            count: courses.length,
+            courses
+        });
+
+    } catch (err) {
+        console.error('Error in getCoursesByUser:', err);
+        res.status(500).json({ 
+            success: false,
+            message: 'Server error while fetching courses',
+            error: process.env.NODE_ENV === 'development' ? err.message : undefined
+        });
+    }
+}
+
 // Get a single course by ID
 async function getCourse(req, res) {
     try {
-        const course = await Course.findById(req.params.id).populate('category');
+        const course = await Course.findById(req.params.id).populate('category').populate('user');
         if (!course) {
             return res.status(404).json({ message: 'Course not found' });
         }
@@ -129,13 +207,13 @@ async function getCoursesByCategory(req, res) {
 }
 
 
-// Export all functions along with `upload` middleware
 module.exports = {
     addCourse,
     getCourses,
     getCourse,
     updateCourse,
     deleteCourse,
-    getCoursesByCategory,
+    getCoursesByUser,  // From HEAD
+    getCoursesByCategory,  // From ForumManagement
     upload
 };

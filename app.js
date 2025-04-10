@@ -11,8 +11,18 @@ const userRouter = require('./routes/userRoute');
 const forumRoutes = require('./routes/forumRoutes');
 const commentRoutes = require('./routes/commentRoutes');
 const likeRoutes = require('./routes/likeRoutes');
-const postRoutes = require('./routes/postRoute');
+app.use('/api', videoProgressRoutes);
+app.use('/api', translateRouter);
+app.use('/api/paypal', paypalRouter);
+app.use('/api/compiler', compilerRouter);
+app.use('/api', postRoutes);
+app.use('/uploads', express.static('uploads'));
 
+
+
+
+
+require('dotenv').config(); // Load .env at startup
 const path = require('path');
 require('dotenv').config();
 const cors = require('cors');
@@ -38,6 +48,7 @@ app.get('/', (req, res) => {
 });
 
 
+
 // Routes
 
 
@@ -58,8 +69,13 @@ app.use('/api', userRouter);
 app.use('/api',forumRoutes);
 app.use('/api',commentRoutes);
 app.use('/api',likeRoutes);
-app.use('/api',postRoutes);
+app.use('/api', videoProgressRoutes);
+app.use('/api', translateRouter);
+app.use('/api/paypal', paypalRouter);
+app.use('/api/compiler', compilerRouter);
+app.use('/api', postRoutes);
 app.use('/uploads', express.static('uploads'));
+
 
 
 // Start the server on port 3000

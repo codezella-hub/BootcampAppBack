@@ -8,6 +8,9 @@ router.post('/addCourse', courseController.upload.single('courseImage'), courseC
 // Get all courses
 router.get('/courses', courseController.getCourses);
 
+// In your routes file
+router.get('/courses/user/:userId', courseController.getCoursesByUser);
+
 // Get a single course by ID
 router.get('/course/:id', courseController.getCourse);
 // Get courses by category ID
