@@ -11,12 +11,12 @@ const userRouter = require('./routes/userRoute');
 const forumRoutes = require('./routes/forumRoutes');
 const commentRoutes = require('./routes/commentRoutes');
 const likeRoutes = require('./routes/likeRoutes');
-app.use('/api', videoProgressRoutes);
-app.use('/api', translateRouter);
-app.use('/api/paypal', paypalRouter);
-app.use('/api/compiler', compilerRouter);
-app.use('/api', postRoutes);
-app.use('/uploads', express.static('uploads'));
+const videoProgressRoutes = require('./routes/videoProgressRoute');
+const translateRouter = require('./routes/translateRoute');
+const paypalRouter = require('./routes/paypalRoutes');
+const compilerRouter = require('./routes/compilerRoute');
+const postRoutes = require('./routes/postRoute');
+
 
 
 
