@@ -58,10 +58,64 @@ const forgetPassword = async (req,res) => {
     }
 };
 
+const resendForgetPasswordEmail = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+      
+      if (!email) {
+          return res.status(400).json({ success: false, message: "Email is required" });
+      }
+
+      
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+          return res.status(400).json({ success: false, message: "Invalid email format" });
+      }
+
+    
+      const user = await User.findOne({ email });
+      if (!user) {
+          return res.status(404).json({ success: false, message: "User not found" });
+      }
+
+     
+      if (user.resetPasswordToken && user.resetPasswordExpiresAt > Date.now()) {
+         
+          user.resetPasswordExpiresAt = Date.now() + 1 * 60 * 60 * 1000; // 1 heure
+          await user.save();
+         
+          await sendPasswordResetEmail(user.email, `${process.env.CLIENT_URL}/reset-password/${user.resetPasswordToken}`);
+          
+          return res.status(200).json({ 
+              success: true, 
+              message: "Password reset link resent successfully" 
+          });
+      }
+
+      const resetToken = crypto.randomBytes(20).toString("hex");
+      user.resetPasswordToken = resetToken;
+      user.resetPasswordExpiresAt = Date.now() + 1 * 60 * 60 * 1000; 
+      await user.save();
+
+      // Envoyer le nouvel email
+      await sendPasswordResetEmail(user.email, `${process.env.CLIENT_URL}/reset-password/${resetToken}`);
+
+      res.status(200).json({ 
+          success: true, 
+          message: "New password reset link sent to your email" 
+      });
+
+  } catch (error) {
+      console.error("Error in resendForgetPasswordEmail:", error);
+      res.status(500).json({ success: false, message: "Server error" });
+  }
+};
 
 
 
 
 
 
-module.exports = {forgetPassword,resetPassword}
+
+module.exports = {forgetPassword,resetPassword,resendForgetPasswordEmail}
