@@ -1,12 +1,20 @@
 const express = require('express');
 const mongo = require('mongoose');
 const db = require('./config/db.json');
+const cookieParser = require("cookie-parser");
+const passportSetup = require("./services/passport");
 const categoryRouter = require('./routes/categoryRoute');
 const courseRouter = require('./routes/courseRoutes');
 const courseDetailsRouter = require('./routes/courseDetailsRoute');
 const subCourseRouter = require('./routes/SubCourseRoute');
 const videoRouter = require('./routes/videoRoute');
-const userRouter = require('./routes/userRoute');
+const registraionRouter = require("./routes/registrationRoute");
+
+const authRouter = require("./routes/authRoutes");
+const twoFaRouter = require("./routes/2faAuthRoutes");
+const resetPasswordRoutes = require("./routes/resetPasswordRoute");
+const updateProfileRoutes = require("./routes/updateProfileRoutes");
+const adminUserRoutes = require("./routes/adminUserRoutes");
 //const AuthRoutes = require('./routes/auth.routes');
 const forumRoutes = require('./routes/forumRoutes');
 const commentRoutes = require('./routes/commentRoutes');
@@ -26,6 +34,11 @@ const responseRoute = require('./routes/responseRoutes');
 
 
 require('dotenv').config(); // Load .env at startup
+
+
+const authGo = require('./routes/auth.go.js');
+const passport = require("passport");
+const session = require("express-session"); 
 const path = require('path');
 require('dotenv').config();
 const cors = require('cors');
@@ -39,9 +52,9 @@ const app = express();
 
 // Middleware to parse JSON
 app.use(express.json());
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true })); // Added this line for form data
-
-
+app.use(passport.initialize());
 // Serve uploaded images statically
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -55,10 +68,12 @@ app.get('/', (req, res) => {
 // Routes
 
 
+// Configuration de CORS
 const corsOptions = {
-  origin: 'http://localhost:5173', // Ensure this matches your frontend port
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+    origin: 'http://localhost:4000', // Remplacez par l'origine de votre frontend
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Méthodes autorisées
+    allowedHeaders: ['Content-Type', 'Authorization'], // En-têtes autorisés
+    credentials: true, // Permet l'envoi de cookies et d'authentification
 };
 
 app.use(cors(corsOptions));
@@ -68,7 +83,15 @@ app.use('/api', courseRouter);
 app.use('/api', courseDetailsRouter);
 app.use('/api', subCourseRouter);
 app.use('/api', videoRouter);
-app.use('/api', userRouter);
+
+app.use('/api', authRouter);
+app.use('/api', resetPasswordRoutes);
+app.use('/api', twoFaRouter);
+app.use('/api', updateProfileRoutes);
+app.use('/api', adminUserRoutes);
+app.use('/auth', authGo);
+
+app.use('/api',registraionRouter);
 app.use('/api',forumRoutes);
 app.use('/api',commentRoutes);
 app.use('/api',likeRoutes);
@@ -80,6 +103,8 @@ app.use('/api', postRoutes);
 app.use('/uploads', express.static('uploads'));
 app.use('/api',quizzRouts);
 app.use('/api',responseRoute);  
+app.use('/api',quizzRouts);
+
 
 // Start the server on port 3000
 app.listen(3000, () => {
