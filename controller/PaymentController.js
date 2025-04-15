@@ -1,17 +1,22 @@
 require('dotenv').config();
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const Order = require('../models/Order');
-const Payment = require('../models/Payment');
+const validCoupons = require('../config/coupons'); // ✅ Ensure this file exists
 
 exports.createCheckoutSession = async (req, res) => {
   try {
     console.log("👉 Received checkout request:", req.body);
 
-    const { items, totalAmount } = req.body;
+    const { items, couponCode } = req.body;
 
     if (!items || !Array.isArray(items) || items.length === 0) {
       throw new Error('No valid items provided for checkout.');
+    }
+
+    // ✅ Apply coupon discount
+    let discountPercent = 0;
+    if (couponCode && validCoupons[couponCode]) {
+      discountPercent = validCoupons[couponCode];
     }
 
     const session = await stripe.checkout.sessions.create({
@@ -21,6 +26,10 @@ exports.createCheckoutSession = async (req, res) => {
           throw new Error(`Invalid price for item: ${JSON.stringify(item)}`);
         }
 
+        const discountedPrice = discountPercent > 0
+          ? item.price - (item.price * discountPercent / 100)
+          : item.price;
+
         return {
           price_data: {
             currency: 'usd',
@@ -28,7 +37,7 @@ exports.createCheckoutSession = async (req, res) => {
               name: item.courseTitle || 'Untitled Course',
               images: [item.courseImage || 'https://placehold.co/600x400'],
             },
-            unit_amount: Math.round(item.price * 100),
+            unit_amount: Math.round(discountedPrice * 100),
           },
           quantity: item.quantity || 1,
         };
@@ -39,7 +48,6 @@ exports.createCheckoutSession = async (req, res) => {
     });
 
     console.log("✅ Stripe session created:", session.id);
-
     res.json({ sessionId: session.id });
   } catch (error) {
     console.error("❌ Stripe error:", error);
