@@ -190,11 +190,58 @@ const getProfilePicture = async (req, res) => {
     res.status(500).send('Erreur serveur');
   }
 };
+deleteAccount = async () => {
+  try {
+    const response = await axios.delete(
+      '/api/users/delete-account',
+      {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Failed to delete account' };
+  }
+};
+toggleProfessorRole = async (req, res) => {
+  try {
+    const user = await User.findById(req.userId);
+    if (!user) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "User not found" 
+      });
+    }
 
+    // Nouvelle logique plus intuitive
+    const newRole = user.role === "user" ? "professor" : "user";
+    user.role = newRole;
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: `User role changed to ${newRole} successfully`,
+      newRole // Renvoyer le nouveau rôle séparément
+    });
+
+  } catch (error) {
+    console.error("Error toggling professor role:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Internal server error",
+      error: error.message 
+    });
+  }
+};
 // Exporter les fonctions
 module.exports = {
   updateProfile,
   updatePassword,
   updateProfilePicture,
-  getProfilePicture
+  getProfilePicture,
+  deleteAccount,
+  toggleProfessorRole
 };
