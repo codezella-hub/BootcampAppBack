@@ -19,6 +19,7 @@ const adminUserRoutes = require("./routes/adminUserRoutes");
 const forumRoutes = require('./routes/forumRoutes');
 const commentRoutes = require('./routes/commentRoutes');
 const likeRoutes = require('./routes/likeRoutes');
+
 const videoProgressRoutes = require('./routes/videoProgressRoute');
 const translateRouter = require('./routes/translateRoute');
 const paypalRouter = require('./routes/paypalRoutes');
@@ -101,8 +102,12 @@ app.use('/api/paypal', paypalRouter);
 app.use('/api/compiler', compilerRouter);
 app.use('/api', postRoutes);
 app.use('/uploads', express.static('uploads'));
+
 app.use('/api',quizzRouts);
 app.use('/api',responseRoute);
+
+
+
 
 
 // Start the server on port 3000
