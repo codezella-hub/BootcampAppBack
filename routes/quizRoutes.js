@@ -25,7 +25,7 @@ router.get('/show', (req, res) => {
 // 🎯 CRUD Routes pour Quiz
 router.post("/quiz",validateQuizData, createQuiz);                    // Créer un quiz
 router.get("/quiz", getAllQuizzes);                  // Obtenir tous les quiz
-router.get("/quiz/:id",checkQuizExists, getQuizById);                // Obtenir un quiz par ID
+router.get("/quiz/:id", getQuizById);                // Obtenir un quiz par ID
 router.put("/quiz/:id",checkQuizExists, updateQuiz);                 // Mettre à jour un quiz par ID
 router.delete("/quiz/:id",checkQuizExists, deleteQuiz);              // Supprimer un quiz par ID
 

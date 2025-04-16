@@ -29,15 +29,13 @@ async function validateQuizData(req, res, next) {
             courseId: yup.string().required(),
             subCourseId: yup.string().required(),
             difficulty: yup.string().required(),
-            totalQuestions: yup.number().required(),
+            //totalQuestions: yup.number().required(),
             timeLimit: yup.number().required(),
             questions: yup.array().of(
                 yup.object().shape({
-                    question_id: yup.string().required(),
                     text: yup.string().required(),
                     options: yup.array().of(yup.string()).required(),
                     correct: yup.string().required(),
-                    type: yup.string().required(),
                     explanation: yup.string().required(),
                 })
             ).required(),
