@@ -1,5 +1,9 @@
 const express = require("express");
 const router = express.Router();
+const {
+    validateQuizData,
+    checkQuizExists,
+}=require("../middleware/quizValidate");
 
 const {
     createQuiz,
@@ -12,17 +16,18 @@ const {
     getQuizByUserId
 } = require("../controller/quizController");
 
+
 // Test route simple
 router.get('/show', (req, res) => {
     res.send('salut 4 twin 9');
 });
 
 // 🎯 CRUD Routes pour Quiz
-router.post("/quiz", createQuiz);                    // Créer un quiz
+router.post("/quiz",validateQuizData, createQuiz);                    // Créer un quiz
 router.get("/quiz", getAllQuizzes);                  // Obtenir tous les quiz
-router.get("/quiz/:id", getQuizById);                // Obtenir un quiz par ID
-router.put("/quiz/:id", updateQuiz);                 // Mettre à jour un quiz par ID
-router.delete("/quiz/:id", deleteQuiz);              // Supprimer un quiz par ID
+router.get("/quiz/:id",checkQuizExists, getQuizById);                // Obtenir un quiz par ID
+router.put("/quiz/:id",checkQuizExists, updateQuiz);                 // Mettre à jour un quiz par ID
+router.delete("/quiz/:id",checkQuizExists, deleteQuiz);              // Supprimer un quiz par ID
 
 // 🧩 Routes spécifiques
 router.get("/quiz/course/:courseid", getQuizByCourseId);        // Quiz par courseId

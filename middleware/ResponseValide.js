@@ -1,4 +1,6 @@
 const yup = require('yup');
+const Quiz = require("../models/Quiz");
+const Response = require("../models/Response");
 
 async function validateResponseData(req, res, next) {
     try {

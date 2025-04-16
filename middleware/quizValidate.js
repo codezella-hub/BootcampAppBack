@@ -1,11 +1,14 @@
 const yup = require('yup');
+const Quiz = require("../models/Quiz");
 
 async function checkQuizExists(req, res, next) {
     try {
         const Schema = yup.object().shape({
             id: yup.string().required(),
         });
+
         await Schema.validate(req.params);
+
 
         const quiz = await Quiz.findById(req.params.id);
         if (!quiz) {
