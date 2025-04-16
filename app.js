@@ -33,7 +33,7 @@ const responseRoute = require('./routes/responseRoutes');
 
 
 
-require('dotenv').config(); // Load .env at startup
+require('dotenv').config(); // Load ..env at startup
 
 
 const authGo = require('./routes/auth.go.js');
@@ -102,8 +102,7 @@ app.use('/api/compiler', compilerRouter);
 app.use('/api', postRoutes);
 app.use('/uploads', express.static('uploads'));
 app.use('/api',quizzRouts);
-app.use('/api',responseRoute);  
-app.use('/api',quizzRouts);
+app.use('/api',responseRoute);
 
 
 // Start the server on port 3000

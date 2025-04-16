@@ -2,30 +2,25 @@ const Response = require("../models/Response");
 const Quiz = require("../models/Quiz");
 const User = require("../models/user");
 
-// Create a new response
+// Créer une nouvelle réponse
 async function createResponse(req, res) {
     try {
-        const { user_id, quiz_id, answers, score, isPassed, attemptNumber, timeTaken } = req.body;
+        const { user_id, quiz_id, subCourse_id, course_id, answers, score, isPassed, timeTaken } = req.body;
 
-       /* const foundUser = await User.findById(user_id);
-        if (!foundUser) {
-            return res.status(404).send("User not found");
+        if (!user_id || !quiz_id || !answers) {
+            return res.status(400).json({ message: "Missing required fields: user_id, quiz_id, answers" });
         }
-
-        const foundQuiz = await Quiz.findById(quiz_id);
-        if (!foundQuiz) {
-            return res.status(404).send("Quiz not found");
-        }*/
 
         const newResponse = new Response({
             user_id,
             quiz_id,
+            subCourse_id,
+            course_id,
             answers,
             score,
             isPassed,
-            attemptNumber,
             timeTaken,
-            dateAttempted: new Date()
+            dateAttempted: new Date(),
         });
 
         await newResponse.save();
@@ -36,7 +31,7 @@ async function createResponse(req, res) {
     }
 }
 
-// Get all responses
+// Récupérer toutes les réponses
 async function getAllResponses(req, res) {
     try {
         const responses = await Response.find();
@@ -47,13 +42,11 @@ async function getAllResponses(req, res) {
     }
 }
 
-// Get a response by ID
+// Récupérer une réponse par ID
 async function getResponseById(req, res) {
     try {
         const response = await Response.findById(req.params.id);
-        if (!response) {
-            return res.status(404).send("Response not found");
-        }
+        if (!response) return res.status(404).send("Response not found");
         res.status(200).json(response);
     } catch (err) {
         console.error(err);
@@ -61,13 +54,61 @@ async function getResponseById(req, res) {
     }
 }
 
-// Delete a response
+// Récupérer les réponses d’un utilisateur
+async function getResponseByUserId(req, res) {
+    try {
+        const responses = await Response.find({ user_id: req.params.userid });
+        if (!responses.length) return res.status(404).send("No responses found for this user");
+        res.status(200).json(responses);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Error fetching responses");
+    }
+}
+
+// Récupérer les réponses d’un quiz
+async function getResponseByQuizId(req, res) {
+    try {
+        const responses = await Response.find({ quiz_id: req.params.quizid});
+        if (!responses.length) return res.status(404).send("No responses found for this quiz");
+        res.status(200).json(responses);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Error fetching responses");
+    }
+}
+
+// Récupérer les réponses par subCourse_id
+async function getResponseBySubCourseId(req, res) {
+    try {
+        const responses = await Response.find({ subCourse_id: req.params.subCourseid });
+        console.log(responses);
+        if (!responses.length) return res.status(404).send("No responses found for this sub-course");
+        res.status(200).json(responses);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Error fetching responses");
+    }
+}
+
+// Récupérer les réponses par course_id
+async function getResponseByCourseId(req, res) {
+    try {
+        const responses = await Response.find({ course_id: req.params.courseId });
+        console.log(responses);
+        if (!responses.length) return res.status(404).send("No responses found for this course");
+        res.status(200).json(responses);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Error fetching responses");
+    }
+}
+
+// Supprimer une réponse
 async function deleteResponse(req, res) {
     try {
-        const deletedResponse = await Response.findByIdAndDelete(req.params.id);
-        if (!deletedResponse) {
-            return res.status(404).send("Response not found");
-        }
+        const deleted = await Response.findByIdAndDelete(req.params.id);
+        if (!deleted) return res.status(404).send("Response not found");
         res.status(200).send("Response deleted");
     } catch (err) {
         console.error(err);
@@ -75,4 +116,13 @@ async function deleteResponse(req, res) {
     }
 }
 
-module.exports = { createResponse, getAllResponses, getResponseById, deleteResponse };
+module.exports = {
+    createResponse,
+    getAllResponses,
+    getResponseById,
+    deleteResponse,
+    getResponseByUserId,
+    getResponseByQuizId,
+    getResponseBySubCourseId,
+    getResponseByCourseId,
+};
