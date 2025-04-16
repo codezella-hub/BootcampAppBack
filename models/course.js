@@ -1,8 +1,7 @@
 const mongo = require('mongoose');
 const Schema = mongo.Schema;
+const Course = require("../models/course");
 
-// Import the Category model (ensure it's registered first)
-// const Category = require('./category');
 
 // Course Schema
 const course = new Schema(
