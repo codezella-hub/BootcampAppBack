@@ -23,15 +23,15 @@ router.get('/show', (req, res) => {
 });
 
 // 🎯 CRUD Routes pour Quiz
-router.post("/quiz", createQuiz);                    // Créer un quiz
-router.get("/quiz", getAllQuizzes);                  // Obtenir tous les quiz
-router.get("/quiz/:id", getQuizById);                // Obtenir un quiz par ID
-router.put("/quiz/:id",checkQuizExists, updateQuiz);                 // Mettre à jour un quiz par ID
-router.delete("/quiz/:id",checkQuizExists, deleteQuiz);              // Supprimer un quiz par ID
+router.post("/", createQuiz);                                      // Créer un quiz
+router.get("/", getAllQuizzes);                                   // Obtenir tous les quiz
+router.get("/:id", getQuizById);                                // Obtenir un quiz par ID
+router.put("/:id",checkQuizExists, updateQuiz);                // Mettre à jour un quiz par ID
+router.delete("/:id",checkQuizExists, deleteQuiz);            // Supprimer un quiz par ID
 
 // 🧩 Routes spécifiques
-router.get("/quiz/course/:courseid", getQuizByCourseId);        // Quiz par courseId
-router.get("/quiz/:subCourseId", getQuizBySubCourseId); // Quiz par subCourseId
-router.get("/quiz/user/:userId", getQuizByUserId);              // Quiz créés par un utilisateur
+router.get("/course/:courseid", getQuizByCourseId);        // Quiz par courseId
+router.get("/subCourse/:subCourseId", getQuizBySubCourseId);        // Quiz par subCourseId
+router.get("/user/:userId", getQuizByUserId);            // Quiz créés par un utilisateur
 
 module.exports = router;

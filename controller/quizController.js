@@ -56,7 +56,7 @@ async function getQuizById(req, res) {
         if (!quiz) {
             return res.status(404).send("Quiz not found");
         }
-        res.status(200).json(quiz);
+        res.json(quiz);
     } catch (err) {
         console.error(err);
         res.status(500).send("Error fetching quiz");
@@ -66,43 +66,36 @@ async function getQuizById(req, res) {
 // Obtenir les quiz par subCourseId
 async function getQuizBySubCourseId(req, res) {
     try {
-        const quizzes = await Quiz.find({ subCourseId: req.params.subCourseId });
-        if (!quizzes || quizzes.length === 0) {
-            return res.status(404).send("No quizzes found for this subCourseId");
-        }
-        res.status(200).json(quizzes);
+        const quiz = await Quiz.findOne({ subCourseId: req.params.subCourseId });
+        if (!quiz) return res.status(404).send("Quiz not found for this subCourseId");
+        res.json(quiz);          // ← returns ONE object, not an array
     } catch (err) {
         console.error(err);
-        res.status(500).send("Error fetching quizzes");
+        res.status(500).send("Error fetching quiz");
     }
 }
 
 // Obtenir les quiz par courseId
 async function getQuizByCourseId(req, res) {
     try {
-        const quizzes = await Quiz.find({ courseId: req.params.courseid });
-        console.log(req.params.courseId);
-        if (!quizzes || quizzes.length === 0) {
-            return res.status(404).send("No quizzes found for this courseId");
-        }
-        res.status(200).json(quizzes);
+        const quiz = await Quiz.findOne({ courseId: req.params.courseId });
+        if (!quiz) return res.status(404).send("Quiz not found for this courseId");
+        res.json(quiz);
     } catch (err) {
         console.error(err);
-        res.status(500).send("Error fetching quizzes");
+        res.status(500).send("Error fetching quiz");
     }
 }
 
 // Obtenir les quiz par utilisateur (créateur)
 async function getQuizByUserId(req, res) {
     try {
-        const quizzes = await Quiz.find({ createdBy: req.params.userId });
-        if (!quizzes || quizzes.length === 0) {
-            return res.status(404).send("No quizzes found for this user");
-        }
-        res.status(200).json(quizzes);
+        const quiz = await Quiz.findOne({ createdBy: req.params.userId });
+        if (!quiz) return res.status(404).send("Quiz not found for this user");
+        res.json(quiz);
     } catch (err) {
         console.error(err);
-        res.status(500).send("Error fetching quizzes");
+        res.status(500).send("Error fetching quiz");
     }
 }
 

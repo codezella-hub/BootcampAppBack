@@ -103,8 +103,8 @@ app.use('/api/compiler', compilerRouter);
 app.use('/api', postRoutes);
 app.use('/uploads', express.static('uploads'));
 
-app.use('/api',quizzRouts);
-app.use('/api',responseRoute);
+app.use('/api/quiz',quizzRouts);
+app.use('/api/response',responseRoute);
 
 
 
