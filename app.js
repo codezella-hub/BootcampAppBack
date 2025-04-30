@@ -29,7 +29,7 @@ const quizzRouts = require('./routes/quizRoutes');
 const responseRoute = require('./routes/responseRoutes');
 
 
-
+const geminiRoutes = require('./routes/gemini.js'); 
 
 
 
@@ -106,7 +106,7 @@ app.use('/uploads', express.static('uploads'));
 app.use('/api/quiz',quizzRouts);
 app.use('/api/response',responseRoute);
 
-
+app.use('/api/gemini', geminiRoutes);
 
 
 
