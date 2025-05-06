@@ -33,6 +33,7 @@ const ordersRoutes = require('./routes/ordersRoutes');
 const geminiRoutes = require('./routes/gemini.js'); 
 const paymentRoutes = require('./routes/paymentRoutes.js'); // Includes /create-checkout-session and /webhook
 const certificateRoutes = require('./routes/certificate');
+const concentrationRoutes = require( './routes/concentrationRoutes.js');
 
 
 
@@ -113,6 +114,7 @@ app.use('/api/payment', paymentRoutes); // Includes /create-checkout-session and
 app.use(`/api/orders`, ordersRoutes);
 app.use(`/api/coupons`, couponRoutes);
 app.use('/api/certificate', certificateRoutes);
+app.use('/api', concentrationRoutes);
 
 // Start the server on port 3000
 app.listen(3000, () => {
