@@ -21,5 +21,8 @@ router.put('/updateCourse/:id', courseController.upload.single('courseImage'), c
 
 // Delete course by ID
 router.delete('/deleteCourse/:id', courseController.deleteCourse);
+// Get certificate for a user and course
+router.post('/getCertificate', courseController.getCertificate);
+
 
 module.exports = router;

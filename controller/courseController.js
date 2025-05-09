@@ -4,6 +4,12 @@ const Course = require('../models/course');
 const fs = require('fs');
 const category = require('../models/category');
 const mongoose = require('mongoose');
+const VideoProgress = require('../models/videoProgress');
+const Concentration = require('../models/Concentration');
+const Response = require('../models/Response');
+const SubCourse = require('../models/subCourse');
+const Quiz = require('../models/Quiz');
+const video = require('../models/video');
 
 
 // Ensure uploads folder exists
@@ -205,8 +211,61 @@ async function getCoursesByCategory(req, res) {
         res.status(500).send('Error fetching courses');
     }
 }
-
-
+async function getCertificate(req, res) {
+    const { idUser, idCourse } = req.body;
+  
+    try {
+      // 1. Sous-cours
+      const subCourses = await SubCourse.find({ course: idCourse });
+      const subCourseIds = subCourses.map(sc => sc._id.toString());
+  
+      if (subCourseIds.length === 0) {
+        return res.status(400).json({ message: "Aucun sous-cours trouvé pour ce cours." });
+      }
+  
+      // 2. Quizzes
+      const quizzes = await Quiz.find({ courseId: idCourse });
+      const quizIds = quizzes.map(q => q._id.toString());
+  
+      const responses = await Response.find({ user_id: idUser, course_id: idCourse });
+      const passedQuizIds = responses.filter(r => r.isPassed).map(r => r.quiz_id.toString());
+  
+      const allQuizzesPassed = quizIds.length > 0 && quizIds.every(qid => passedQuizIds.includes(qid));
+      if (!allQuizzesPassed) {
+        return res.status(400).json({ message: "Tous les quizs ne sont pas passés avec succès." });
+      }
+  
+      // 3. Vidéos
+      const videos = await video.find({ subCourseId: { $in: subCourseIds } });
+      const videoIds = videos.map(v => v._id.toString());
+  
+      // 4. Progression vidéos à 100%
+      const progresses = await VideoProgress.find({ user: idUser, video: { $in: videoIds } });
+      const completedVideoIds = progresses.filter(p => p.completedPercentage === 100).map(p => p.video.toString());
+  
+      const allVideosCompleted = videoIds.length > 0 && videoIds.every(vid => completedVideoIds.includes(vid));
+      if (!allVideosCompleted) {
+        return res.status(400).json({ message: "Toutes les vidéos ne sont pas complétées à 100%." });
+      }
+  
+      // 5. Concentration ≥ 70%
+      const concentrations = await Concentration.find({ userId: idUser, videoId: { $in: videoIds } });
+      const focusedVideoIds = concentrations.filter(c => c.concentration >= 70).map(c => c.videoId.toString());
+  
+      const allConcentrationOk = videoIds.every(vid => focusedVideoIds.includes(vid));
+      if (!allConcentrationOk) {
+        return res.status(400).json({ message: "La concentration n'est pas suffisante sur toutes les vidéos." });
+      }
+  
+      // ✅ Succès
+      return res.status(200).json({ message: "Certificat débloqué avec succès !" });
+  
+    } catch (error) {
+      console.error("Erreur lors de la vérification du certificat :", error);
+      return res.status(500).json({ message: "Erreur serveur." });
+    }
+  }
+  
 module.exports = {
     addCourse,
     getCourses,
@@ -214,6 +273,7 @@ module.exports = {
     updateCourse,
     deleteCourse,
     getCoursesByUser,  // From HEAD
-    getCoursesByCategory,  // From ForumManagement
+    getCoursesByCategory, 
+    getCertificate, 
     upload
 };
