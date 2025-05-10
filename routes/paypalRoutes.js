@@ -1,6 +1,7 @@
 const express = require("express");
 const paypal = require("../config/paypalConfig");
-const Order = require("../models/order");  // Import the Order model
+const Order = require("../models/orders");  // Import the Order model
+//const Order = require("../models/order");  // Import the Order model
 const router = express.Router();
 const Course = require("../models/course");  // Assuming you have a Course model
 
@@ -90,7 +91,7 @@ router.get("/cancel", async (req, res) => {
     }
 });
 
-router.get("/purchased-courses/:userId", async (req, res) => {
+/*router.get("/purchased-courses/:userId", async (req, res) => {
     try {
         const userId = req.params.userId;
 
@@ -102,6 +103,29 @@ router.get("/purchased-courses/:userId", async (req, res) => {
 
         res.json(purchasedCourses);
     } catch (error) {
+        res.status(500).json({ error: "Failed to fetch purchased courses" });
+    }
+});*/
+
+router.get("/purchased-courses/:userId", async (req, res) => {
+    try {
+        const userId = req.params.userId;
+
+        // Find all orders where the user has paid (status: "completed")
+        const orders = await Order.find({ 
+            userid: userId
+           
+        }).populate("items.courseId"); // Changed to populate items.courseId
+
+        // Extract course details from all items in all orders
+        const purchasedCourses = orders.reduce((acc, order) => {
+            const coursesInOrder = order.items.map(item => item.courseId);
+            return [...acc, ...coursesInOrder];
+        }, []);
+
+        res.json(purchasedCourses);
+    } catch (error) {
+        console.error(error);
         res.status(500).json({ error: "Failed to fetch purchased courses" });
     }
 });

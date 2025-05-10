@@ -157,5 +157,27 @@ router.get('/:userId/:courseId', async (req, res) => {
         res.status(500).json({ message: 'Erreur lors de la génération du certificat.' });
     }
 });
+router.get("/check-certificate/:userId/:courseId", async (req, res) => {
+  const { userId, courseId } = req.params;
+
+  try {
+    // Trouver les commandes où certificate = true pour le user et le course donné
+    const order = await Order.findOne({
+      userid: userId,
+      "items.courseId": courseId,
+      "items.certificate": true
+    });
+
+    if (order) {
+      return res.json({ certificate: true });
+    } else {
+      return res.json({ certificate: false });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Erreur serveur lors de la vérification du certificat." });
+  }
+});
+
 
 module.exports = router;
