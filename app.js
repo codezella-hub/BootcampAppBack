@@ -34,8 +34,8 @@ const geminiRoutes = require('./routes/gemini.js');
 const paymentRoutes = require('./routes/paymentRoutes.js'); // Includes /create-checkout-session and /webhook
 const certificateRoutes = require('./routes/certificate');
 const concentrationRoutes = require( './routes/concentrationRoutes.js');
-
-
+const historyOrderRoutes = require('./routes/historyOrdersRoutes.js');
+const StripeController = require('./controller/StripeController');
 
 require('dotenv').config(); // Load ..env at startup
 
@@ -70,7 +70,8 @@ app.get('/', (req, res) => {
 
 
 // Routes
-
+// ✅ Stripe webhook handler (must come BEFORE express.json)
+app.post('/api/payment/webhook', express.raw({ type: 'application/json' }), StripeController.handleWebhook);
 
 // Configuration de CORS
 const corsOptions = {
@@ -112,9 +113,14 @@ app.use('/api/response',responseRoute);
 app.use('/api/gemini', geminiRoutes);
 app.use('/api/payment', paymentRoutes); // Includes /create-checkout-session and /webhook
 app.use(`/api/orders`, ordersRoutes);
-app.use(`/api/coupons`, couponRoutes);
+
 app.use('/api/certificate', certificateRoutes);
 app.use('/api', concentrationRoutes);
+app.use('/api/payment', paymentRoutes); // Includes /create-checkout-session
+
+app.use('/api/coupons', couponRoutes);
+app.use('/api/history-orders', historyOrderRoutes);
+
 
 // Start the server on port 3000
 app.listen(3000, () => {

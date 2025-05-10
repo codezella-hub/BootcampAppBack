@@ -1,15 +1,9 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const PaymentSchema = new mongoose.Schema({
     userId: { 
-        type: Number, 
-        required: true, 
-        validate: {
-            validator: function(value) {
-                return /^\d{8}$/.test(value.toString()); 
-            },
-            message: 'CIN must be exactly 8 digits.'
-        }
+        type: String,  
+        required: true 
     },
     amount: {
         type: Number,
