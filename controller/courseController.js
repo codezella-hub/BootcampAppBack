@@ -246,13 +246,13 @@ if (videos.length === 0) {
   
       // 4. Progression vidéos à 100%
       const progresses = await VideoProgress.find({ user: idUser, video: { $in: videoIds } });
-      const completedVideoIds = progresses.filter(p => p.completedPercentage === 100).map(p => p.video.toString());
+      const completedVideoIds = progresses.filter(p => p.completedPercentage >= 50).map(p => p.video.toString());
 
 
 
       const allVideosCompleted = videoIds.length > 0 && videoIds.every(vid => completedVideoIds.includes(vid));
       if (!allVideosCompleted) {
-        return res.status(400).json({ message: "Toutes les vidéos ne sont pas complétées à 100%." });
+        return res.status(400).json({ message: "Toutes les vidéos ne sont pas complétées à 50%." });
       }
   
       // 5. Concentration ≥ 70%

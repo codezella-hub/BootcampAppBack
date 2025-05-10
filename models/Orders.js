@@ -33,7 +33,13 @@ const OrderSchema = new mongoose.Schema({
               type: Number,
               required: true,
               min: 0
-            }
+            },
+      
+        certificate: {
+          type: Boolean,
+          required: false,
+          default: false
+        }
           }
         ],
         validate: {
@@ -67,6 +73,7 @@ const OrderSchema = new mongoose.Schema({
         max: 100, 
       }
       
+      
 }, { 
     timestamps: true,
     toJSON: { virtuals: true },
@@ -78,4 +85,5 @@ OrderSchema.virtual('subtotal').get(function() {
     return this.items.reduce((total, item) => total + (item.price * item.quantity), 0);
 });
 
-module.exports = mongoose.model("Orders", OrderSchema);
+module.exports = mongoose.models.Orders || mongoose.model("Orders", OrderSchema);
+

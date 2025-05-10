@@ -10,6 +10,7 @@ const QRCode = require('qrcode');
 const User = require('../models/User'); 
 const Course = require('../models/Course');
 const os = require('os');
+const Order = require('../models/Orders');
 
 function getLocalIPv4() {
   const interfaces = os.networkInterfaces();
@@ -133,6 +134,23 @@ router.get('/:userId/:courseId', async (req, res) => {
         doc.on('finish', () => {
             fs.unlinkSync(pngLogoPath);  // Supprimer le fichier PNG après utilisation
         });
+        
+        // Mise à jour du champ certificate
+            await Order.findOneAndUpdate(
+              {
+                userid: userId,
+                "items.courseId": courseId
+              },
+              {
+                $set: {
+                  "items.$.certificate": true
+                }
+              },
+              { new: true }
+            );
+
+
+
 
     } catch (error) {
         console.error(error);
