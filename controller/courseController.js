@@ -228,21 +228,28 @@ async function getCertificate(req, res) {
       const quizIds = quizzes.map(q => q._id.toString());
   
       const responses = await Response.find({ user_id: idUser, course_id: idCourse });
-      const passedQuizIds = responses.filter(r => r.isPassed).map(r => r.quiz_id.toString());
   
-      const allQuizzesPassed = quizIds.length > 0 && quizIds.every(qid => passedQuizIds.includes(qid));
-      if (!allQuizzesPassed) {
-        return res.status(400).json({ message: "Tous les quizs ne sont pas passés avec succès." });
-      }
+  
+      const passedQuizIds = responses
+  .filter(r => r.isPassed)
+  .map(r => r.quiz_id.toString());
+
+const allQuizzesPassed = quizIds.length > 0 && quizIds.every(qid => passedQuizIds.includes(qid));
+
   
       // 3. Vidéos
-      const videos = await video.find({ subCourseId: { $in: subCourseIds } });
+      const videos = await video.find({ subCourse: { $in: subCourseIds } });
+if (videos.length === 0) {
+  return res.status(400).json({ message: "Aucune vidéo disponible pour ce sous-cours." });
+}
       const videoIds = videos.map(v => v._id.toString());
   
       // 4. Progression vidéos à 100%
       const progresses = await VideoProgress.find({ user: idUser, video: { $in: videoIds } });
       const completedVideoIds = progresses.filter(p => p.completedPercentage === 100).map(p => p.video.toString());
-  
+
+
+
       const allVideosCompleted = videoIds.length > 0 && videoIds.every(vid => completedVideoIds.includes(vid));
       if (!allVideosCompleted) {
         return res.status(400).json({ message: "Toutes les vidéos ne sont pas complétées à 100%." });
