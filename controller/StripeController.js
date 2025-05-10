@@ -1,5 +1,5 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); // ✅ move secret key to .env
-const OrdersModel = require('../models/Orders');
+const OrdersModel = require('../models/orders');
 const Payment = require('../models/Payment');
 
 exports.createCheckoutSession = async (req, res) => {

@@ -1,6 +1,6 @@
 const mongo = require('mongoose');
 const Schema = mongo.Schema;
-const Course = require("../models/course");
+//const Course = require("../models/course");
 
 
 // Course Schema
@@ -24,3 +24,4 @@ const course = new Schema(
 );
 
 module.exports = mongo.models.Course || mongo.model('Course', course);
+//module.exports = mongo.model('Course', course);
