@@ -1,6 +1,7 @@
 const express = require('express');
 const mongo = require('mongoose');
 const db = require('./config/db.json');
+
 const cookieParser = require("cookie-parser");
 const passportSetup = require("./services/passport");
 const categoryRouter = require('./routes/categoryRoute');
@@ -120,6 +121,8 @@ app.use('/api/payment', paymentRoutes); // Includes /create-checkout-session
 
 app.use('/api/coupons', couponRoutes);
 app.use('/api/history-orders', historyOrderRoutes);
+
+
 
 
 // Start the server on port 3000
