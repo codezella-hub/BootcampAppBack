@@ -37,6 +37,7 @@ const certificateRoutes = require('./routes/certificate');
 const concentrationRoutes = require( './routes/concentrationRoutes.js');
 const historyOrderRoutes = require('./routes/historyOrdersRoutes.js');
 const StripeController = require('./controller/StripeController');
+const dashboardRoutes = require('./routes/dashboardRoutes.js')
 
 require('dotenv').config(); // Load ..env at startup
 
@@ -121,6 +122,7 @@ app.use('/api/payment', paymentRoutes); // Includes /create-checkout-session
 
 app.use('/api/coupons', couponRoutes);
 app.use('/api/history-orders', historyOrderRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 
 
