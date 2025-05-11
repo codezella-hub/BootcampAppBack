@@ -233,8 +233,11 @@ async function getCertificate(req, res) {
       const passedQuizIds = responses
   .filter(r => r.isPassed)
   .map(r => r.quiz_id.toString());
-
 const allQuizzesPassed = quizIds.length > 0 && quizIds.every(qid => passedQuizIds.includes(qid));
+
+if (!allQuizzesPassed) {
+return res.status(400).json({ message: "Tous les quizzes ne sont pas réussis." });
+}
 
   
       // 3. Vidéos

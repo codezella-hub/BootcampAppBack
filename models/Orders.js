@@ -51,9 +51,9 @@ const OrderSchema = new mongoose.Schema({
       }
       ,
     payment: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Boolean,
         ref: "Payment",
-        default: null
+        default: false
     },
     status: {
         type: String,
