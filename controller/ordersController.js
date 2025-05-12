@@ -135,6 +135,25 @@ exports.getOrdersByUserId = async (req, res) => {
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
+exports.getOrdersPendingByUserId = async (req, res) => {
+  try {
+    const query = { userid: req.params.userid,status: 'pending' };
+    const orders = await OrdersModel.find(query)
+      .populate({
+        path: 'items.courseId',
+        select: 'title description courseImage price'
+      });
+
+    if (!orders || orders.length === 0) {
+      return res.status(404).json({ message: "No orders found for this user" });
+    }
+
+    res.status(200).json(orders);
+  } catch (error) {
+    console.error("Error fetching orders by user ID:", error);
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+};
 
 /**
  * Update order quantity

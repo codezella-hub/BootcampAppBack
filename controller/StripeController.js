@@ -29,8 +29,26 @@ exports.createCheckoutSession = async (req, res) => {
       orderDate: new Date(),
     });
 
-    await newOrder.save();
+    //await newOrder.save();
     console.log(`✅ Order saved to DB with ID: ${newOrder._id}`);
+
+    const updatedOrder = await OrdersModel.findOneAndUpdate(
+      { userid: userid, payment: { $ne: true } }, // optionnel : ne pas modifier si déjà payé
+      {
+      $set: {
+      payment: true,
+      status: 'paid', // optionnel : tu peux aussi changer le statut si tu veux
+      updatedAt: new Date()
+      }
+      },
+      { new: true } // pour retourner l'objet mis à jour
+      );
+
+      if (updatedOrder) {
+      console.log('✅ Order updated:', updatedOrder._id);
+      } else {
+      console.log('⚠️ Aucune commande à mettre à jour pour cet utilisateur.');
+      }
 
     // ✅ Send single line with total amount to Stripe
     const session = await stripe.checkout.sessions.create({

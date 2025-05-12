@@ -15,7 +15,8 @@ router.get("/", asyncHandler(OrdersController.getOrders));
 // Get Orderss by user ID
 // This route is used to fetch Orderss for a specific user by their user ID
 router.get("/user-id/:userid", asyncHandler(OrdersController.getOrdersByUserId)); 
-
+// Get Orderss by user ID with status pending
+router.get("/user-id/pending/:userid", asyncHandler(OrdersController.getOrdersPendingByUserId)); 
 
 
 // Get Orders by ID
