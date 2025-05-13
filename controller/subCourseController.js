@@ -44,6 +44,28 @@ async function getSubCourses(req, res) {
     }
 }
 
+// Get all SubCourses by User
+async function getSubCoursesByUser(req, res) {
+    try {
+        const userId = req.params.userId; // Get user ID from route parameter
+        
+        const subCourses = await SubCourse.find({ user: userId })
+            .populate({
+                path: 'course',
+                populate: {
+                    path: 'category',
+                    model: 'Category'
+                }
+            })
+            .populate('user');
+
+        res.status(200).json(subCourses);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error fetching subCourses');
+    }
+}
+
 // Get all SubCourses for a specific course and user
 async function getSubCoursesByCourseAndUser(req, res) {
     try {
@@ -174,5 +196,6 @@ module.exports = {
     getSubCoursesByCourse,
     updateSubCourse,
     getSubCoursesByCourseAndUser,
-    deleteSubCourse
+    deleteSubCourse,
+    getSubCoursesByUser
 };

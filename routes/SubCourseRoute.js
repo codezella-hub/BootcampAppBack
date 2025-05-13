@@ -8,6 +8,8 @@ router.post('/addSubCourse', subCourseController.createSubCourse);
 // Route to get all course details
 router.get('/SubCourses', subCourseController.getSubCourses);
 
+router.get('/SubCourses/:userId', subCourseController.getSubCoursesByUser);
+
 // Define the route
 router.get('/subcourses/course/:id', subCourseController.getSubCoursesByCourse);
 

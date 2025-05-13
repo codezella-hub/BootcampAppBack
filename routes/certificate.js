@@ -8,9 +8,9 @@ const QRCode = require('qrcode');
 
 
 const User = require('../models/User'); 
-const Course = require('../models/Course');
+const Course = require('../models/course');
 const os = require('os');
-const Order = require('../models/Orders');
+const Order = require('../models/orders');
 
 function getLocalIPv4() {
   const interfaces = os.networkInterfaces();
@@ -49,112 +49,167 @@ router.get('/:userId/:courseId', async (req, res) => {
     try {
         const user = await User.findById(userId);
         const course = await Course.findById(courseId);
-        const ip = getLocalIPv4(); 
-        console.log(ip);
-        const certUrl = `http://${ip}:3000/api/certificate/${userId}/${courseId}`;
-
-
-        // Générer un QR code depuis l'URL
-        const qrImageData = await QRCode.toDataURL(certUrl);
-
-        // Convertir le QR base64 en buffer
-        const qrImageBuffer = Buffer.from(qrImageData.split(',')[1], 'base64');
+        
         if (!user || !course) {
             return res.status(404).json({ message: 'Utilisateur ou cours introuvable.' });
         }
 
+        const ip = getLocalIPv4();
+        const certUrl = `http://${ip}:3000/api/certificate/${userId}/${courseId}`;
+
+        // Générer un QR code
+        const qrImageData = await QRCode.toDataURL(certUrl);
+        const qrImageBuffer = Buffer.from(qrImageData.split(',')[1], 'base64');
+
         const fullName = `${user.firstname} ${user.lastname}`;
         const courseTitle = course.title;
 
-        const doc = new PDFDocument({ size: 'A4' });
+        // Créer le PDF en paysage
+        const doc = new PDFDocument({ 
+            size: 'A4', 
+            layout: 'landscape',
+            margin: 0
+        });
 
-        // Définir les headers pour le téléchargement du PDF
+        // Gestion des erreurs
+        let hasError = false;
+        doc.on('error', (err) => {
+            hasError = true;
+            console.error('PDF generation error:', err);
+            if (!res.headersSent) {
+                res.status(500).json({ error: 'PDF generation failed' });
+            }
+        });
+
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', `attachment; filename="certificate-${userId}-${courseId}.pdf"`);
-
-        // Envoyer le PDF directement dans la réponse (stream)
         doc.pipe(res);
 
-        // Chemin vers le logo SVG
-        const logoPath = path.join(__dirname, '..', 'uploads', 'logo', 'logo.svg');
-        const signaturePath = path.join(__dirname, '..', 'uploads', 'signature', 'signature.svg');
-        
-        // Convertir le logo SVG en PNG et ajouter au PDF
-        const pngLogoPath = path.join(__dirname, '..', 'uploads', 'logo', 'logo.png');  // Nouveau fichier PNG
-        const pngSignaturePath = path.join(__dirname, '..', 'uploads', 'signature', 'signature.png');
-        // Vérifier si le fichier PNG existe déjà, sinon le créer
-        if (!fs.existsSync(pngLogoPath)) {
-            await sharp(logoPath)
-                .png()
-                .toFile(pngLogoPath);
+        // Dimensions
+        const pageWidth = doc.page.width;
+        const pageHeight = doc.page.height;
+        const centerX = pageWidth / 2; // Vrai centre de la page
+        const margin = 40;
+
+        // Fond blanc
+        doc.rect(0, 0, pageWidth, pageHeight).fill('#ffffff');
+
+        // Fonction pour charger les images
+        const loadImage = async (filePath) => {
+            if (!fs.existsSync(filePath)) return null;
+            try {
+                return await sharp(filePath).toBuffer();
+            } catch (err) {
+                console.error(`Error loading image ${filePath}:`, err);
+                return null;
+            }
+        };
+
+        // Charger les images
+        const [logo, badge] = await Promise.all([
+            loadImage(path.join(__dirname, '..', 'uploads', 'logo', 'logo.png')),
+            loadImage(path.join(__dirname, '..', 'uploads', 'badge', 'image.png'))
+        ]);
+
+        // Logo en haut à gauche (120x40)
+        if (logo) {
+            doc.image(logo, margin, margin, { width: 120, height: 30 });
         }
-        if (!fs.existsSync(pngSignaturePath)) {
-            await sharp(signaturePath)
-                .png()
-                .toFile(pngSignaturePath);
+
+        // Badge à droite (150x150)
+        if (badge) {
+            doc.image(badge, pageWidth - margin - 150, margin , { width: 150, height: 150 });
         }
 
+        // Zone de contenu central (entre le logo et le badge)
+        const contentWidth = pageWidth - 2 * margin - 150 - 120; // Largeur disponible entre logo et badge
+        const contentStartX = margin -130 + (contentWidth / 2); // Centre de la zone de contenu
 
+        // Titre principal centré
+        doc.font('Helvetica-Bold')
+           .fontSize(28)
+           .fillColor('#2c3e50')
+           .text('CERTIFICAT DE RÉUSSITE', contentStartX, margin + 150, { 
+               align: 'center',
+               width: contentWidth
+           });
 
-        // Ajouter le logo PNG au PDF
-        doc.image(pngLogoPath, { width: 100, align: 'center' }).moveDown(1);
-        doc.image(pngSignaturePath, 400, 410, { width: 100 });
-
-        // Afficher le QR code en bas à gauche du PDF
-        doc.image(qrImageBuffer, 400,20, { width: 70 });
+        // Contenu central
+        const contentY = margin + 200;
         
-
-
-        
-        // Titre du certificat
-        doc.fontSize(30).font('Helvetica-Bold').text('Certificat de Réussite', { align: 'center' }).moveDown(2);
+        // Texte "Ce certificat est décerné à"
+        doc.font('Helvetica')
+           .fontSize(16)
+           .fillColor('#4a5568')
+           .text('Ce certificat est décerné à :', contentStartX, contentY, { 
+               align: 'center',
+               width: contentWidth
+           });
 
         // Nom de l'étudiant
-        doc.fontSize(18).font('Helvetica').text('Ce certificat est décerné à :', { align: 'center' }).moveDown();
-        doc.fontSize(22).font('Helvetica-Bold').text(fullName, { align: 'center', underline: true }).moveDown();
+        doc.font('Helvetica-Bold')
+           .fontSize(22)
+           .fillColor('#2b6cb0')
+           .text(fullName, contentStartX, contentY + 40, { 
+               align: 'center',
+               width: contentWidth
+           });
+
+        // Texte "Pour avoir complété..."
+        doc.font('Helvetica')
+           .fontSize(16)
+           .fillColor('#4a5568')
+           .text('Pour avoir complété avec succès le cours :', contentStartX, contentY + 90, { 
+               align: 'center',
+               width: contentWidth
+           });
 
         // Titre du cours
-        doc.fontSize(18).font('Helvetica').text('Pour avoir complété avec succès le cours :', { align: 'center' }).moveDown();
-        doc.fontSize(20).font('Helvetica-Oblique').text(`"${courseTitle}"`, { align: 'center' }).moveDown(2);
+        doc.font('Helvetica-Bold')
+           .fontSize(20)
+           .fillColor('#2c3e50')
+           .text(`"${courseTitle}"`, contentStartX, contentY + 130, { 
+               align: 'center',
+               width: contentWidth
+           });
 
-        // Date et signature fictive
-        doc.fontSize(14).font('Helvetica').text(`Fait le : ${new Date().toLocaleDateString()}`, { align: 'right' }).moveDown();
-        doc.fontSize(14).font('Helvetica').text(`Signature: _____________________`, { align: 'right' }).moveDown(2);
+        // QR Code en bas à droite (80x80)
+        doc.image(qrImageBuffer, 
+                 pageWidth - margin - 80, 
+                 pageHeight - margin - 80, 
+                 { width: 80, height: 80 });
 
-        // Ligne décorative
-        doc.moveTo(50, doc.y).lineTo(550, doc.y).strokeColor('#000').lineWidth(1).stroke().moveDown(1);
+        // Date et nom du site en bas à gauche
+        doc.font('Helvetica')
+           .fontSize(12)
+           .fillColor('#718096')
+           .text(`Fait le : ${new Date().toLocaleDateString('fr-FR')}`, 
+                 margin, 
+                 pageHeight - margin - 30);
 
-        // Footer
-        doc.fontSize(12).font('Helvetica').text('Bootcamp StudyHub - www.studyhub.com', { align: 'center' });
+        doc.font('Helvetica-Oblique')
+           .fontSize(12)
+           .text('Bootcamp StudyHub - www.studyhub.com', 
+                 margin, 
+                 pageHeight - margin - 10);
 
-        // Finaliser le document PDF
-        doc.end();
-
-        // Après avoir terminé l'écriture du PDF, supprimer le fichier PNG temporaire
-        doc.on('finish', () => {
-            fs.unlinkSync(pngLogoPath);  // Supprimer le fichier PNG après utilisation
-        });
-        
-        // Mise à jour du champ certificate
+        // Finalisation
+        if (!hasError) {
+            doc.end();
+            
+            // Mise à jour de la base de données
             await Order.findOneAndUpdate(
-              {
-                userid: userId,
-                "items.courseId": courseId
-              },
-              {
-                $set: {
-                  "items.$.certificate": true
-                }
-              },
-              { new: true }
+                { userid: userId, "items.courseId": courseId },
+                { $set: { "items.$.certificate": true } },
+                { new: true }
             );
-
-
-
+        }
 
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Erreur lors de la génération du certificat.' });
+        console.error('Certificate generation error:', error);
+        if (!res.headersSent) {
+            res.status(500).json({ message: 'Erreur lors de la génération du certificat.' });
+        }
     }
 });
 router.get("/check-certificate/:userId/:courseId", async (req, res) => {
