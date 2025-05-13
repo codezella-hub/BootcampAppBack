@@ -52,20 +52,6 @@ StudyHub leverages **TensorFlow.js** for intelligent quiz evaluation, helping au
 - Admin dashboards with user and course metrics
 - Role-specific endpoints
 
-## 🗂️ Project Structure
-
-bootcampappback/
-│
-├── config/ # DB connection, environment variables
-├── controllers/ # Business logic for each route
-├── middleware/ # JWT, role guards
-├── models/ # MongoDB schemas
-├── routes/ # REST API routes
-├── services/ # AI logic, mailer, cart, utilities
-├── uploads/ # Uploaded certificates & images
-├── utils/ # Token & validation helpers
-├── .env # Environment variables (ignored in git)
-└── server.js # Main application entry point
 
 
 ## 🐳 Docker-Ready (optional)
@@ -89,4 +75,19 @@ bootcampappback/
 `Node.js` `Express` `MongoDB` `JWT` `TensorFlow` `MachineLearning` `AI` `REST API` `Education Platform` `BootCamp` `Fullstack` `Quiz Evaluation` `Forum` `Esprit School of Engineering` `4TWIN`
 
 > “Designed for intelligent education, built with scalable backend logic.”
+## 🗂️ Project Structure
+```bash
+
+bootcampappback/
+│
+├── config/ # DB connection, environment variables
+├── controllers/ # Business logic for each route
+├── middleware/ # JWT, role guards
+├── models/ # MongoDB schemas
+├── routes/ # REST API routes
+├── services/ # AI logic, mailer, cart, utilities
+├── uploads/ # Uploaded certificates & images
+├── utils/ # Token & validation helpers
+├── .env # Environment variables (ignored in git)
+└── server.js # Main application entry point
 
