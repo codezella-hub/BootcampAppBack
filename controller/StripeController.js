@@ -12,7 +12,6 @@ exports.createCheckoutSession = async (req, res) => {
       return res.status(400).json({ error: "No items to process." });
     }
 
-   
     const order = new Order({
       totalAmount: amount,
       items: items.map(item => ({

@@ -1,13 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const forumController = require('../controller/forumController');
-const validate = require('../middleware/validate');
+const validate = require('../middleware/forumValidate');
 
 
-router.post('/forums', validate.validateForum, forumController.addForum);
+router.post('/forums', forumController.upload.single('image'),validate.validateForum, forumController.addForum);
 router.get('/forums', forumController.showAllForums);
 router.get('/forums/:id', forumController.showForumById);
-router.put('/forums/:id', validate.validateForum, forumController.updateForum);
+router.get('/forums/user/:id', forumController.showForumsByUser);
+router.put('/forums/:id',forumController.upload.single('image'), validate.validateForum, forumController.updateForum);
 router.delete('/forums/:id', forumController.deleteForum);
 
 module.exports = router;

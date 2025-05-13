@@ -4,7 +4,7 @@ const OrderController = require("../controller/orderController");
 
 // Middleware for async error handling
 const asyncHandler = (fn) => (req, res, next) =>
-Promise.resolve(fn(req, res, next)).catch(next);
+    Promise.resolve(fn(req, res, next)).catch(next);
 
 // Create an order
 router.post("/", asyncHandler(OrderController.createOrder));
@@ -14,7 +14,7 @@ router.get("/", asyncHandler(OrderController.getOrders));
 
 // Get orders by user ID
 // This route is used to fetch orders for a specific user by their user ID
-router.get("/user-id/:userid", asyncHandler(OrderController.getOrderByUserId)); 
+router.get("/user-id/:userid", asyncHandler(OrderController.getOrderByUserId));
 
 
 
