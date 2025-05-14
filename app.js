@@ -39,6 +39,8 @@ const historyOrderRoutes = require('./routes/historyOrdersRoutes.js');
 const StripeController = require('./controller/StripeController');
 const dashboardRoutes = require('./routes/dashboardRoutes.js')
 const messageRoutes = require("./routes/messages.routes.js")
+const scraper =require('./controller/scraper.js');
+
 require('dotenv').config(); // Load ..env at startup
 
 
@@ -124,6 +126,7 @@ app.use('/api/coupons', couponRoutes);
 app.use('/api/history-orders', historyOrderRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/message', messageRoutes);
+
 
 
 
